@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<!-- obfuscate -->
+<project name="fastdfs_client" default="jar" basedir=".">
+
+  <target name="init">
+	    <!-- The root directory of the workspace -->
+	    <property name="fastdfs_client.home" value="."/>
+	
+	    <!-- The destination directory for the build -->
+	    <property name="fastdfs_client.build" value="${fastdfs_client.home}/build"/>
+
+      <!-- The source directory for the build -->
+	    <property name="fastdfs_client.src" value="${fastdfs_client.home}"/>
+	
+	    <!-- The destination directory for all the compiled classes. -->
+	    <property name="fastdfs_client.bin_dir" value="${fastdfs_client.build}/classes"/>
+	
+      <!-- The classpath used for building the workspace. -->
+      <property name="jar" value="${fastdfs_client.build}/fastdfs_client.jar"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <mkdir dir="${fastdfs_client.bin_dir}"/>
+    <javac srcdir="${fastdfs_client.src}"
+           destdir="${fastdfs_client.bin_dir}"
+           includes="org/**/*.java"
+           debug="on"
+           encoding="ISO8859-1"
+           failonerror="true"/>
+  </target>
+  
+  <target name="components" depends="init">
+  </target>
+  
+  <!-- create .jar -->
+    <target name="jar" depends="compile">
+            <jar jarfile="${jar}"
+                    basedir="${fastdfs_client.bin_dir}"
+                    includes="org/csource/**">
+              <fileset dir="${fastdfs_client.src}">
+                <include name="*.conf"/>
+              </fileset>
+            </jar>
+    </target>
+
+  <target name="clean" depends="init">
+  	<delete dir="${fastdfs_client.build}"/>
+  </target>
+    
+  <!--<target name="core" depends="compile, components"/>-->
+  <target name="core" depends="compile"/>
+  
+  </project>
+  
