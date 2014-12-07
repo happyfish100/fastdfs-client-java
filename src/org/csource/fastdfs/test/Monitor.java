@@ -118,6 +118,9 @@ public class Monitor
 					System.out.println("\t\tcurrent_write_path = " + storageStat.getCurrentWritePath());
 					System.out.println("\t\tsource ip_addr = " + storageStat.getSrcIpAddr());
 					System.out.println("\t\tif_trunk_server = " + storageStat.isTrunkServer());
+					System.out.println("\t\tconntion.alloc_count  = " + storageStat.getConnectionAllocCount());
+					System.out.println("\t\tconntion.current_count  = " + storageStat.getConnectionCurrentCount());
+					System.out.println("\t\tconntion.max_count  = " + storageStat.getConnectionMaxCount());
 					System.out.println("\t\ttotal_upload_count = " + storageStat.getTotalUploadCount());
 					System.out.println("\t\tsuccess_upload_count = " + storageStat.getSuccessUploadCount());
 					System.out.println("\t\ttotal_append_count = " + storageStat.getTotalAppendCount());

@@ -62,6 +62,11 @@ public abstract class StructBase
 		return (int)ProtoCommon.buff2long(bs, offset + filedInfo.offset);
 	}
 	
+	protected int int32Value(byte[] bs, int offset, FieldInfo filedInfo)
+	{
+		return ProtoCommon.buff2int(bs, offset + filedInfo.offset);
+	}
+
 	protected byte byteValue(byte[] bs, int offset, FieldInfo filedInfo)
 	{
 		return bs[offset + filedInfo.offset];

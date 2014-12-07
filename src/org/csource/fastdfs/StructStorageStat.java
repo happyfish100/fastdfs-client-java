@@ -873,6 +873,33 @@ public class StructStorageStat extends StructBase
   }
   
 /**
+* get connection alloc count
+* @return connection alloc count
+*/
+  public int getConnectionAllocCount()
+  {
+  	return this.connectionAllocCount;
+  }
+
+/**
+* get connection current count
+* @return connection current count
+*/
+  public int getConnectionCurrentCount()
+  {
+  	return this.connectionCurrentCount;
+  }
+
+/**
+* get connection max count
+* @return connection max count
+*/
+  public int getConnectionMaxCount()
+  {
+  	return this.connectionMaxCount;
+  }
+
+/**
 * set fields
 * @param bs byte array
 * @param offset start offset
@@ -896,9 +923,9 @@ public class StructStorageStat extends StructBase
 		this.storageHttpPort = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORAGE_HTTP_PORT]);
 		this.currentWritePath = intValue(bs, offset, fieldsArray[FIELD_INDEX_CURRENT_WRITE_PATH]);
 
-		this.connectionAllocCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_CONNECTION_ALLOC_COUNT]);
-		this.connectionCurrentCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_CONNECTION_CURRENT_COUNT]);
-		this.connectionMaxCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_CONNECTION_MAX_COUNT]);
+		this.connectionAllocCount = int32Value(bs, offset, fieldsArray[FIELD_INDEX_CONNECTION_ALLOC_COUNT]);
+		this.connectionCurrentCount = int32Value(bs, offset, fieldsArray[FIELD_INDEX_CONNECTION_CURRENT_COUNT]);
+		this.connectionMaxCount = int32Value(bs, offset, fieldsArray[FIELD_INDEX_CONNECTION_MAX_COUNT]);
 
 		this.totalUploadCount = longValue(bs, offset, fieldsArray[FIELD_INDEX_TOTAL_UPLOAD_COUNT]);
 		this.successUploadCount = longValue(bs, offset, fieldsArray[FIELD_INDEX_SUCCESS_UPLOAD_COUNT]);
