@@ -1,4 +1,8 @@
 
+Version 1.26  2017-04-17
+  * IniFileReader use getResourceAsStream first
+  * change charactor encoding to UTF-8
+
 Version 1.25  2014-12-07
   * support connection stats since FastDFS Server v5.04
 
