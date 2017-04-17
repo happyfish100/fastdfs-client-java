@@ -461,7 +461,7 @@ public class Base64
          try
          {
             Base64 b64 = new Base64();
-            String str = "agfrtu¿¦etÊ²1234¼Ù´óerty¿Õ234·¢¿¦2344Ê²µÄ";
+            String str = "agfrtuÂ¿Â¦etÃŠÂ²1234Â¼Ã™Â´Ã³ertyÂ¿Ã•234Â·Â¢Â¿Â¦2344ÃŠÂ²ÂµÃ„";
             String str64 = "";
 
             //encode

@@ -14,14 +14,14 @@ run the FastDFS Java Client test:
 java -cp <fastdfs_client_jar_filename> org.csource.fastdfs.test.TestClient <config_filename> <upload_filename>
 
 eg.:
-java -cp fastdfs_client_v1.22.jar org.csource.fastdfs.test.TestClient fdfs_client.conf c:\windows\system32\notepad.exe
+java -cp fastdfs_client_v1.25.jar org.csource.fastdfs.test.TestClient fdfs_client.conf c:\windows\system32\notepad.exe
 
 or:
-java -cp fastdfs_client_v1.22.jar org.csource.fastdfs.test.TestClient fdfs_client.conf /usr/include/stdlib.h
+java -cp fastdfs_client_v1.25.jar org.csource.fastdfs.test.TestClient fdfs_client.conf /usr/include/stdlib.h
 
 
 run the FastDFS monitor:
 java -cp <fastdfs_client_jar_filename> org.csource.fastdfs.test.Monitor <config_filename>
 
 eg.:
-java -cp fastdfs_client_v1.22.jar org.csource.fastdfs.test.Monitor fdfs_client.conf
+java -cp fastdfs_client_v1.25.jar org.csource.fastdfs.test.Monitor fdfs_client.conf

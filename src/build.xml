@@ -26,7 +26,7 @@
            destdir="${fastdfs_client.bin_dir}"
            includes="org/**/*.java"
            debug="on"
-           encoding="ISO8859-1"
+           encoding="UTF-8"
            failonerror="true"/>
   </target>
   
@@ -52,4 +52,4 @@
   <target name="core" depends="compile"/>
   
   </project>
-  
+
