@@ -128,60 +128,90 @@ public class IniFileReader
 	
 	private void loadFromFile(String conf_filename) throws FileNotFoundException, IOException
 	{
-		FileReader fReader;
-		BufferedReader buffReader;
-		String line;
-		String[] parts;
+	//修改人 孟鹏飞，问题说明 使用中发现原来客户端打jar包后，在另一个项目中引用，另一个项目打jar包后运行时找不到客户端配置文件 ，能不能把我名字加上，以后好找工作
+	//	FileReader fReader;
+	//	BufferedReader buffReader;
+	//	String line;
+	//	String[] parts;
 		String name;
 		String value;
 		Object obj;
 		ArrayList valueList;
-		
-	  fReader = new FileReader(conf_filename);
-	  buffReader = new BufferedReader(fReader);
+		InputStream is=null;
+//	  fReader = new FileReader(conf_filename);
+//	  buffReader = new BufferedReader(fReader);
 	  this.paramTable = new Hashtable();
 	  
 	  try
 	  {
-	  	while ((line=buffReader.readLine()) != null)
-	  	{
-	  		line = line.trim();
-	  		if (line.length() == 0 || line.charAt(0) == '#')
-	  		{
-	  			continue;
-	  		}
+//	  	while ((line=buffReader.readLine()) != null)
+//	  	{
+//	  		line = line.trim();
+//	  		if (line.length() == 0 || line.charAt(0) == '#')
+//	  		{
+//	  			continue;
+//	  		}
+//
+//	  		parts = line.split("=", 2);
+//	  		if (parts.length != 2)
+//	  		{
+//	  			continue;
+//	  		}
+		  is = Thread.currentThread().getContextClassLoader().getResourceAsStream(conf_filename);
+//		  System.out.println(conf_filename+"========================================");
+		  Properties props = new Properties();
+		  props.load(is);
+		  Iterator<Map.Entry<Object, Object>> it = props.entrySet().iterator();
+		  while (it.hasNext()) {
+			  Map.Entry<Object, Object> entry = it.next();
+			  name= entry.getKey().toString();
+			  value = entry.getValue().toString();
+//			  System.out.println(name+"======================================");
+			  obj = this.paramTable.get(name);
+			  if (obj == null)
+			  {
+				  this.paramTable.put(name, value);
+			  }
+			  else if (obj instanceof String)
+			  {
+				  valueList = new ArrayList();
+				  valueList.add(obj);
+				  valueList.add(value);
+				  this.paramTable.put(name, valueList);
+			  }
+			  else
+			  {
+				  valueList = (ArrayList)obj;
+				  valueList.add(value);
+			  }
+		  }
+//		  name = parts[0].trim();
+//	  		value = parts[1].trim();
 	  		
-	  		parts = line.split("=", 2);
-	  		if (parts.length != 2)
-	  		{
-	  			continue;
-	  		}
-	  	
-	  		name = parts[0].trim();
-	  		value = parts[1].trim();
-	  		
-	  		obj = this.paramTable.get(name);
-	  		if (obj == null)
-	  		{
-	  			this.paramTable.put(name, value);
-	  		}
-	  		else if (obj instanceof String)
-	  		{
-	  			valueList = new ArrayList();
-	  			valueList.add(obj);
-	  			valueList.add(value);
-	  			this.paramTable.put(name, valueList);
-	  		}
-	  		else
-	  		{
-	  			valueList = (ArrayList)obj;
-	  			valueList.add(value);
-	  		}
-	  	}
+//	  		obj = this.paramTable.get(name);
+//	  		if (obj == null)
+//	  		{
+//	  			this.paramTable.put(name, value);
+//	  		}
+//	  		else if (obj instanceof String)
+//	  		{
+//	  			valueList = new ArrayList();
+//	  			valueList.add(obj);
+//	  			valueList.add(value);
+//	  			this.paramTable.put(name, valueList);
+//	  		}
+//	  		else
+//	  		{
+//	  			valueList = (ArrayList)obj;
+//	  			valueList.add(value);
+//	  		}
+//	  	}
 	  }
 	  finally
 	  {
-	  	fReader.close();
+		  if (is!=null)
+		  		is.close();
+//	  	fReader.close();
 	  }
   }  
 }
