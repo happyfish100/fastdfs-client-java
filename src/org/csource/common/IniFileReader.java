@@ -128,7 +128,7 @@ public class IniFileReader
 	
 	private void loadFromFile(String conf_filename) throws FileNotFoundException, IOException
     {
-        //修改人 孟鹏飞，问题说明 使用中发现原来客户端打jar包后，在另一个项目中引用，另一个项目打jar包后运行时找不到客户端配置文件 ，能不能把我名字加上，以后好找工作
+        //问题说明 使用中发现原来客户端打jar包后，在另一个项目中引用，另一个项目打jar包后运行时找不到客户端配置文件
         String name;
         String value;
         Object obj;
