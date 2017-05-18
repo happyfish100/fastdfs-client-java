@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<project name="fastdfs-client-java" default="package" basedir=".">
+
+  <target name="init">
+    <property name="project.name" value="fastdfs-client-java"/>
+    <property name="project.version" value="1.27-SNAPSHOT"/>
+    <property name="project.java" value="${basedir}/src/main/java"/>
+    <property name="project.resources" value="${basedir}/src/main/resources"/>
+    <property name="project.build" value="${basedir}/build"/>
+    <property name="project.classes" value="${project.build}/classes"/>
+    <property name="target.jar.file" value="${project.build}/${project.name}-${project.version}.jar"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <mkdir dir="${project.classes}"/>
+    <javac destdir="${project.classes}" encoding="UTF-8" failonerror="true" debug="on">
+      <src path="${project.java}"/>
+    </javac>
+    <copy todir="${project.classes}">
+      <fileset dir="${project.resources}" includes="**/*"/>
+    </copy>
+  </target>
+
+  <target name="package" depends="compile">
+    <jar jarfile="${target.jar.file}"
+         basedir="${project.classes}"
+         includes="**/*">
+    </jar>
+  </target>
+
+  <target name="clean" depends="init">
+    <delete dir="${project.build}"/>
+  </target>
+
+</project>
+

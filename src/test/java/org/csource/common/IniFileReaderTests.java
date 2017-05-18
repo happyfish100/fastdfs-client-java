@@ -1,6 +1,4 @@
-package org.csource.fastdfs.test;
-
-import org.csource.common.IniFileReader;
+package org.csource.common;
 
 /**
  * Created by James on 2017/5/16.
@@ -18,7 +16,7 @@ public class IniFileReaderTests {
     System.out.println("http.anti_steal_token: " + iniFileReader.getBoolValue("http.anti_steal_token", false));
     System.out.println("http.secret_key: " + iniFileReader.getStrValue("http.secret_key"));
     String[] tracker_servers = iniFileReader.getValues("tracker_server");
-    if(tracker_servers != null) {
+    if (tracker_servers != null) {
       System.out.println("tracker_servers.length: " + tracker_servers.length);
       for (int i = 0; i < tracker_servers.length; i++) {
         System.out.println(String.format("tracker_servers[%s]: %s", i, tracker_servers[i]));
