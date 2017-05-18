@@ -129,9 +129,16 @@ public class IniFileReader
   private void loadFromFile(String confFilePath) throws IOException {
     InputStream in = null;
     try {
+      // 优先从文件系统路径加载
+      if (new File(confFilePath).exists()) {
+        in = new FileInputStream(confFilePath);
+        //System.out.println("loadFrom...file path done");
+      }
       // 从类路径加载
-      in = classLoader().getResourceAsStream(confFilePath);
-      //System.out.println("loadFrom...class path done");
+      else {
+        in = classLoader().getResourceAsStream(confFilePath);
+        //System.out.println("loadFrom...class path done");
+      }
       readToParamTable(in);
     } catch (Exception ex) {
       ex.printStackTrace();
