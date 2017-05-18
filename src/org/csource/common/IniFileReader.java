@@ -21,7 +21,7 @@ public class IniFileReader
 {
 	private Hashtable paramTable;
 	private String conf_filename;
-	
+
 /**
 * @param conf_filename config filename
 */
@@ -30,7 +30,7 @@ public class IniFileReader
 		this.conf_filename = conf_filename;
 		loadFromFile(conf_filename);
 	}
-	
+
 /**
 * get the config filename
 * @return config filename
@@ -39,7 +39,7 @@ public class IniFileReader
 	{
 		return this.conf_filename;
 	}
-	
+
 /**
 * get string value from config file
 * @param name item name in config file
@@ -53,12 +53,12 @@ public class IniFileReader
 		{
 			return null;
 		}
-		
+
 		if (obj instanceof String)
 		{
 			return (String)obj;
 		}
-		
+
 		return (String)((ArrayList)obj).get(0);
 	}
 
@@ -75,7 +75,7 @@ public class IniFileReader
 		{
 			return default_value;
 		}
-		
+
 		return Integer.parseInt(szValue);
 	}
 
@@ -92,11 +92,11 @@ public class IniFileReader
 		{
 			return default_value;
 		}
-		
-		return szValue.equalsIgnoreCase("yes") || szValue.equalsIgnoreCase("on") || 
+
+		return szValue.equalsIgnoreCase("yes") || szValue.equalsIgnoreCase("on") ||
 					 szValue.equalsIgnoreCase("true") || szValue.equals("1");
 	}
-	
+
 /**
 * get all values from config file
 * @param name item name in config file
@@ -106,77 +106,101 @@ public class IniFileReader
 	{
 		Object obj;
 		String[] values;
-		
+
 		obj = this.paramTable.get(name);
 		if (obj == null)
 		{
 			return null;
 		}
-		
+
 		if (obj instanceof String)
 		{
 			values = new String[1];
 			values[0] = (String)obj;
 			return values;
 		}
-		
+
 		Object[] objs = ((ArrayList)obj).toArray();
 		values = new String[objs.length];
 		System.arraycopy(objs, 0, values, 0, objs.length);
 		return values;
 	}
-	
-	private void loadFromFile(String conf_filename) throws FileNotFoundException, IOException
-    {
-        //问题说明 使用中发现原来客户端打jar包后，在另一个项目中引用，另一个项目打jar包后运行时找不到客户端配置文件
-        String name;
-        String value;
-        Object obj;
-        ArrayList valueList;
-        InputStream is=null;
-        this.paramTable = new Hashtable();
 
-        try
-        {
-            Properties props;
-            try {
-                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(conf_filename);
-                props = new Properties();
-                props.load(is);
-            } catch (Exception ex) {
-                is = new FileInputStream(conf_filename);
-                props = new Properties();
-                props.load(is);
-            }
-            Iterator<Map.Entry<Object, Object>> it = props.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Object, Object> entry = it.next();
-                name= entry.getKey().toString();
-                value = entry.getValue().toString();
-                obj = this.paramTable.get(name);
-                if (obj == null)
-                {
-                    this.paramTable.put(name, value);
-                }
-                else if (obj instanceof String)
-                {
-                    valueList = new ArrayList();
-                    valueList.add(obj);
-                    valueList.add(value);
-                    this.paramTable.put(name, valueList);
-                }
-                else
-                {
-                    valueList = (ArrayList)obj;
-                    valueList.add(value);
-                }
-            }
-        }
-        finally
-        {
-            if (is != null) {
-                is.close();
-            }
-        }
+  private void loadFromFile(String confFilePath) throws IOException {
+    InputStream in = null;
+    try {
+      // 从类路径加载
+      in = classLoader().getResourceAsStream(confFilePath);
+      //System.out.println("loadFrom...class path done");
+      readToParamTable(in);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      try {
+        if(in != null) in.close();
+        //System.out.println("loadFrom...finally...in.close(); done");
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
     }
+  }
+
+  private void readToParamTable(InputStream in) throws IOException {
+    this.paramTable = new Hashtable();
+    String line;
+    String[] parts;
+    String name;
+    String value;
+    Object obj;
+    ArrayList valueList;
+    InputStreamReader inReader = null;
+    BufferedReader bufferedReader = null;
+    try {
+      inReader = new InputStreamReader(in);
+      bufferedReader = new BufferedReader(inReader);
+      while ((line = bufferedReader.readLine()) != null) {
+        line = line.trim();
+        if (line.length() == 0 || line.charAt(0) == '#') {
+          continue;
+        }
+        parts = line.split("=", 2);
+        if (parts.length != 2) {
+          continue;
+        }
+        name = parts[0].trim();
+        value = parts[1].trim();
+        obj = this.paramTable.get(name);
+        if (obj == null) {
+          this.paramTable.put(name, value);
+        } else if (obj instanceof String) {
+          valueList = new ArrayList();
+          valueList.add(obj);
+          valueList.add(value);
+          this.paramTable.put(name, valueList);
+        } else {
+          valueList = (ArrayList) obj;
+          valueList.add(value);
+        }
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      try {
+        if(bufferedReader != null) bufferedReader.close();
+        if(inReader != null) inReader.close();
+        //System.out.println("readToParamTable...finally...bufferedReader.close();inReader.close(); done");
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+    }
+  }
+
+  private static ClassLoader classLoader() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    if (loader == null) {
+      loader = ClassLoader.getSystemClassLoader();
+    }
+    return loader;
+  }
+
 }
