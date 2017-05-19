@@ -30,12 +30,31 @@ public class IniFileReader {
     loadFromFile(conf_filename);
   }
 
-  private static ClassLoader classLoader() {
+  public static ClassLoader classLoader() {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     if (loader == null) {
       loader = ClassLoader.getSystemClassLoader();
     }
     return loader;
+  }
+
+  public static InputStream loadFromOsFileSystemOrClasspathAsStream(String filePath) {
+    InputStream in = null;
+    try {
+      // 优先从文件系统路径加载
+      if (new File(filePath).exists()) {
+        in = new FileInputStream(filePath);
+        //System.out.println("loadFrom...file path done");
+      }
+      // 从类路径加载
+      else {
+        in = classLoader().getResourceAsStream(filePath);
+        //System.out.println("loadFrom...class path done");
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return in;
   }
 
   /**
@@ -128,18 +147,8 @@ public class IniFileReader {
   }
 
   private void loadFromFile(String confFilePath) throws IOException {
-    InputStream in = null;
+    InputStream in = loadFromOsFileSystemOrClasspathAsStream(confFilePath);
     try {
-      // 优先从文件系统路径加载
-      if (new File(confFilePath).exists()) {
-        in = new FileInputStream(confFilePath);
-        //System.out.println("loadFrom...file path done");
-      }
-      // 从类路径加载
-      else {
-        in = classLoader().getResourceAsStream(confFilePath);
-        //System.out.println("loadFrom...class path done");
-      }
       readToParamTable(in);
     } catch (Exception ex) {
       ex.printStackTrace();
