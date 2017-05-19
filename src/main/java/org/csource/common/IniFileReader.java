@@ -1,130 +1,131 @@
 /**
-* Copyright (C) 2008 Happy Fish / YuQing
-*
-* FastDFS Java Client may be copied only under the terms of the GNU Lesser
-* General Public License (LGPL).
-* Please visit the FastDFS Home Page http://www.csource.org/ for more detail.
-**/
+ * Copyright (C) 2008 Happy Fish / YuQing
+ * <p>
+ * FastDFS Java Client may be copied only under the terms of the GNU Lesser
+ * General Public License (LGPL).
+ * Please visit the FastDFS Home Page http://www.csource.org/ for more detail.
+ **/
 
 package org.csource.common;
 
 import java.io.*;
-import java.util.*;
-import org.csource.common.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
-* ini file reader / parser
-* @author Happy Fish / YuQing
-* @version Version 1.0
-*/
-public class IniFileReader
-{
-	private Hashtable paramTable;
-	private String conf_filename;
+ * ini file reader / parser
+ *
+ * @author Happy Fish / YuQing
+ * @version Version 1.0
+ */
+public class IniFileReader {
+  private Hashtable paramTable;
+  private String conf_filename;
 
-/**
-* @param conf_filename config filename
-*/
-	public IniFileReader(String conf_filename) throws FileNotFoundException, IOException
-	{
-		this.conf_filename = conf_filename;
-		loadFromFile(conf_filename);
-	}
+  /**
+   * @param conf_filename config filename
+   */
+  public IniFileReader(String conf_filename) throws FileNotFoundException, IOException {
+    this.conf_filename = conf_filename;
+    loadFromFile(conf_filename);
+  }
 
-/**
-* get the config filename
-* @return config filename
-*/
-	public String getConfFilename()
-	{
-		return this.conf_filename;
-	}
+  private static ClassLoader classLoader() {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    if (loader == null) {
+      loader = ClassLoader.getSystemClassLoader();
+    }
+    return loader;
+  }
 
-/**
-* get string value from config file
-* @param name item name in config file
-* @return string value
-*/
-	public String getStrValue(String name)
-	{
-		Object obj;
-		obj = this.paramTable.get(name);
-		if (obj == null)
-		{
-			return null;
-		}
+  /**
+   * get the config filename
+   *
+   * @return config filename
+   */
+  public String getConfFilename() {
+    return this.conf_filename;
+  }
 
-		if (obj instanceof String)
-		{
-			return (String)obj;
-		}
+  /**
+   * get string value from config file
+   *
+   * @param name item name in config file
+   * @return string value
+   */
+  public String getStrValue(String name) {
+    Object obj;
+    obj = this.paramTable.get(name);
+    if (obj == null) {
+      return null;
+    }
 
-		return (String)((ArrayList)obj).get(0);
-	}
+    if (obj instanceof String) {
+      return (String) obj;
+    }
 
-/**
-* get int value from config file
-* @param name item name in config file
-* @param default_value the default value
-* @return int value
-*/
-	public int getIntValue(String name, int default_value)
-	{
-		String szValue = this.getStrValue(name);
-		if (szValue == null)
-		{
-			return default_value;
-		}
+    return (String) ((ArrayList) obj).get(0);
+  }
 
-		return Integer.parseInt(szValue);
-	}
+  /**
+   * get int value from config file
+   *
+   * @param name          item name in config file
+   * @param default_value the default value
+   * @return int value
+   */
+  public int getIntValue(String name, int default_value) {
+    String szValue = this.getStrValue(name);
+    if (szValue == null) {
+      return default_value;
+    }
 
-/**
-* get boolean value from config file
-* @param name item name in config file
-* @param default_value the default value
-* @return boolean value
-*/
-	public boolean getBoolValue(String name, boolean default_value)
-	{
-		String szValue = this.getStrValue(name);
-		if (szValue == null)
-		{
-			return default_value;
-		}
+    return Integer.parseInt(szValue);
+  }
 
-		return szValue.equalsIgnoreCase("yes") || szValue.equalsIgnoreCase("on") ||
-					 szValue.equalsIgnoreCase("true") || szValue.equals("1");
-	}
+  /**
+   * get boolean value from config file
+   *
+   * @param name          item name in config file
+   * @param default_value the default value
+   * @return boolean value
+   */
+  public boolean getBoolValue(String name, boolean default_value) {
+    String szValue = this.getStrValue(name);
+    if (szValue == null) {
+      return default_value;
+    }
 
-/**
-* get all values from config file
-* @param name item name in config file
-* @return string values (array)
-*/
-	public String[] getValues(String name)
-	{
-		Object obj;
-		String[] values;
+    return szValue.equalsIgnoreCase("yes") || szValue.equalsIgnoreCase("on") ||
+      szValue.equalsIgnoreCase("true") || szValue.equals("1");
+  }
 
-		obj = this.paramTable.get(name);
-		if (obj == null)
-		{
-			return null;
-		}
+  /**
+   * get all values from config file
+   *
+   * @param name item name in config file
+   * @return string values (array)
+   */
+  public String[] getValues(String name) {
+    Object obj;
+    String[] values;
 
-		if (obj instanceof String)
-		{
-			values = new String[1];
-			values[0] = (String)obj;
-			return values;
-		}
+    obj = this.paramTable.get(name);
+    if (obj == null) {
+      return null;
+    }
 
-		Object[] objs = ((ArrayList)obj).toArray();
-		values = new String[objs.length];
-		System.arraycopy(objs, 0, values, 0, objs.length);
-		return values;
-	}
+    if (obj instanceof String) {
+      values = new String[1];
+      values[0] = (String) obj;
+      return values;
+    }
+
+    Object[] objs = ((ArrayList) obj).toArray();
+    values = new String[objs.length];
+    System.arraycopy(objs, 0, values, 0, objs.length);
+    return values;
+  }
 
   private void loadFromFile(String confFilePath) throws IOException {
     InputStream in = null;
@@ -144,7 +145,7 @@ public class IniFileReader
       ex.printStackTrace();
     } finally {
       try {
-        if(in != null) in.close();
+        if (in != null) in.close();
         //System.out.println("loadFrom...finally...in.close(); done");
       } catch (Exception ex) {
         ex.printStackTrace();
@@ -193,21 +194,13 @@ public class IniFileReader
       ex.printStackTrace();
     } finally {
       try {
-        if(bufferedReader != null) bufferedReader.close();
-        if(inReader != null) inReader.close();
+        if (bufferedReader != null) bufferedReader.close();
+        if (inReader != null) inReader.close();
         //System.out.println("readToParamTable...finally...bufferedReader.close();inReader.close(); done");
       } catch (Exception ex) {
         ex.printStackTrace();
       }
     }
-  }
-
-  private static ClassLoader classLoader() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    if (loader == null) {
-      loader = ClassLoader.getSystemClassLoader();
-    }
-    return loader;
   }
 
 }
