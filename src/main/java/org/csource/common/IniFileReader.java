@@ -25,7 +25,7 @@ public class IniFileReader {
   /**
    * @param conf_filename config filename
    */
-  public IniFileReader(String conf_filename) throws FileNotFoundException, IOException {
+  public IniFileReader(String conf_filename) throws IOException {
     this.conf_filename = conf_filename;
     loadFromFile(conf_filename);
   }
@@ -155,6 +155,7 @@ public class IniFileReader {
 
   private void readToParamTable(InputStream in) throws IOException {
     this.paramTable = new Hashtable();
+    if (in == null) return;
     String line;
     String[] parts;
     String name;
