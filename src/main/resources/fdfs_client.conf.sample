@@ -1,0 +1,9 @@
+connect_timeout = 2
+network_timeout = 30
+charset = UTF-8
+http.tracker_http_port = 8080
+http.anti_steal_token = no
+http.secret_key = FastDFS1234567890
+
+tracker_server = 10.0.11.243:22122
+tracker_server = 10.0.11.244:22122

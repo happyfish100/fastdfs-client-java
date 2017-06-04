@@ -1,0 +1,131 @@
+
+Version 1.26  2017-04-17
+  * IniFileReader use getResourceAsStream first
+  * change charactor encoding to UTF-8
+
+Version 1.25  2014-12-07
+  * support connection stats since FastDFS Server v5.04
+
+Version 1.24  2012-12-01
+  * bug fixed: StorageClient.get_file_info support appender file and 
+    slave file correctly
+
+Version 1.23  2012-11-18
+  * query_file_info changed, you must 
+    upgrade your FastDFS server to V4.03 or higher version
+
+Version 1.22  2012-10-06
+  * group and storage stat both add 1 field, you must 
+    upgrade your FastDFS server to V4.00 or higher version
+
+Version 1.21  2012-06-25
+  * add exception class MyException
+  * class IniFileReader same as FastDHT java client
+
+Version 1.20  2012-05-27
+  * appender file support truncate and modify operation
+  * storage stat add 6 fields, you must upgrade your
+    FastDFS server to V3.08 or higher version
+
+Version 1.19  2011-05-29
+  * storage stat add field if_trunk_server, you must upgrade your
+    FastDFS server to V3.00 or higher version
+  * tracker or storage close no throw IOException (silence close)
+
+Version 1.18  2011-01-29
+  * storage stat support total_upload_bytes, success_upload_bytes, 
+    total_download_bytes and success_download_bytes etc. 18 fields
+    you must upgrade your FastDFS server to V2.08 or higher version
+  * StorageClient add functions: get_file_info and query_file_info,
+    StorageClient1 add functions: get_file_info1 and query_file_info1
+
+Version 1.17  2011-01-09
+  * slave file's prefix name can be empty,
+    you must upgrade your FastDFS server to V2.07 or higher version
+  * support list group stats and storage stats
+  * support delete storage server
+  * add monitor class: org.csource.fastdfs.test.Monitor
+  
+Version 1.16  2010-10-17
+  * upload file can get available storage server list of the group, 
+    you must upgrade your FastDFS server to V2.01 or higher version
+
+Version 1.15  2010-08-07
+  * protocol reponse command changed. you must upgrade your FastDFS server
+    to V2.00 or higher version
+  * upload file protocol changed, you must upgrade your FastDFS server
+    to V2.00 or higher version
+
+Version 1.14  2010-06-22
+  * bug fixed: delete the new created local file when download_file to 
+    local file fail
+  * support connect timeout for connecting, the network timeout used to 
+    read and write
+
+Version 1.13  2010-05-30
+  * org.csource.fastdfs.ProtoCommon add method genSlaveFilename
+  * support ACTIVE_TEST command. you must upgrade your FastDFS server
+    to V1.28 or higher version
+
+Version 1.12  2009-11-27
+  * support uploading slave file
+  * file ext name change from 5 to 6, you must upgrade your FastDFS server
+    to V1.23 or higher version
+
+Version 1.11  2009-10-22
+  * correct interface / class name from beginning with Dowload to Download
+  * auto reconnect with reused connection when IOException ocurs
+  * test classes move to package org.csource.fastdfs.test
+  * add classes org.csource.fastdfs.UploadStream and 
+    org.csource.fastdfs.DownloadStream for streaming writing or reading
+    
+Version 1.10  2009-10-04
+  * support multi-tracker server group, you can make multi 
+    org.csource.fastdfs.TrackerClient instances for each tracker server group
+  
+Version 1.9  2009-10-01
+  * add load test class: org.csource.fastdfs.TestLoad
+  * network IO performance enhancement
+  * upload file support callback for sending file content
+
+Version 1.8  2009-08-30
+  * TrackerClient, in function getConnection, add synchronized to avoid conflict
+  * support file URL with token 
+  
+Version 1.7  2009-08-01
+  * support cmd TRACKER_PROTO_CMD_SERVICE_QUERY_FETCH_ALL: query all storage 
+    servers, you must upgrade your FastDFS server to V1.19 or higher version
+    
+Version 1.6  2009-05-24
+  * download file support offset and download bytes, you must upgrade your
+    FastDFS server to V1.18 or higher version
+
+Version 1.5  2009-02-14
+  * client can specify group name when upload file, you must upgrade your
+    FastDFS server to V1.16 or higher version
+    
+Version 1.4  2008-11-10
+  * upload file support ext name, you must upgrade your
+    FastDFS server to V1.12 or higher version
+  * upload protocol add field store_path_index (1 byte)
+  * add method TrackerClient.getUpdateStorage. to support getmeta, setmeta 
+    and delete file
+  * TrackerClient.getFetchStorage bug fixed
+
+Version 1.3  2008-10-16
+  * client download file support callback function(class)
+  * add class "StorageClient1" and function "TrackerClient.getFetchStorage1" 
+    to combine 2 fields: group name and filename to 1 field: file id
+  * add anothor client test program: TestClient1.java to use file id
+
+Version 1.2  2008-09-08
+  * communication protocol changed to support large file exceed 2GB: 
+    all integer field is 8 bytes big-endian, 
+    you must upgrade your FastDFS server to V1.8 or higher version
+
+Version 1.1  2008-08-10
+  * upload file package remove the one pad byte field, you must upgrade your
+    FastDFS server to V1.4 or higher version
+
+Version 1.0  2008-08-03
+  * first version
