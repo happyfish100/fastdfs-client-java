@@ -6,7 +6,7 @@
  * Please visit the FastDFS Home Page http://www.csource.org/ for more detail.
  **/
 
-package org.csource.fastdfs.test;
+package org.csource.fastdfs;
 
 import org.csource.common.NameValuePair;
 import org.csource.fastdfs.*;
@@ -18,10 +18,10 @@ import java.net.InetSocketAddress;
  * client test
  *
  * @author Happy Fish / YuQing
- * @version Version 1.18
+ * @version Version 1.20
  */
-public class TestClient {
-  private TestClient() {
+public class TestAppender {
+  private TestAppender() {
   }
 
   /**
@@ -70,10 +70,8 @@ public class TestClient {
       byte[] file_buff;
       NameValuePair[] meta_list;
       String[] results;
-      String master_filename;
-      String prefix_name;
+      String appender_filename;
       String file_ext_name;
-      String generated_slave_filename;
       int errno;
 
       meta_list = new NameValuePair[4];
@@ -98,12 +96,12 @@ public class TestClient {
       }
 
       startTime = System.currentTimeMillis();
-      results = client.upload_file(file_buff, "txt", meta_list);
-      System.out.println("upload_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
+      results = client.upload_appender_file(file_buff, "txt", meta_list);
+      System.out.println("upload_appender_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
 
   		/*
   		group_name = "";
-  		results = client.upload_file(group_name, file_buff, "txt", meta_list);
+  		results = client.upload_appender_file(group_name, file_buff, "txt", meta_list);
   		*/
       if (results == null) {
         System.err.println("upload file fail, error code: " + client.getErrorCode());
@@ -159,21 +157,15 @@ public class TestClient {
         }
 
         file_buff = "this is a slave buff".getBytes(ClientGlobal.g_charset);
-        master_filename = remote_filename;
-        prefix_name = "-part1";
+        appender_filename = remote_filename;
         file_ext_name = "txt";
         startTime = System.currentTimeMillis();
-        results = client.upload_file(group_name, master_filename, prefix_name, file_buff, file_ext_name, meta_list);
-        System.out.println("upload_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
-        if (results != null) {
-          System.err.println("slave file group_name: " + results[0] + ", remote_filename: " + results[1]);
-
-          generated_slave_filename = ProtoCommon.genSlaveFilename(master_filename, prefix_name, file_ext_name);
-          if (!generated_slave_filename.equals(results[1])) {
-            System.err.println("generated slave file: " + generated_slave_filename + "\n != returned slave file: " + results[1]);
-          }
-
-          System.err.println(client.get_file_info(results[0], results[1]));
+        errno = client.append_file(group_name, appender_filename, file_buff);
+        System.out.println("append_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          System.err.println(client.get_file_info(group_name, appender_filename));
+        } else {
+          System.err.println("append file fail, error no: " + errno);
         }
 
         startTime = System.currentTimeMillis();
@@ -186,7 +178,7 @@ public class TestClient {
         }
       }
 
-      results = client.upload_file(local_filename, null, meta_list);
+      results = client.upload_appender_file(local_filename, null, meta_list);
       if (results != null) {
         String file_id;
         int ts;
@@ -228,21 +220,15 @@ public class TestClient {
           System.err.println("Download file fail, error no: " + errno);
         }
 
-        master_filename = remote_filename;
-        prefix_name = "-part2";
+        appender_filename = remote_filename;
         file_ext_name = null;
         startTime = System.currentTimeMillis();
-        results = client.upload_file(group_name, master_filename, prefix_name, local_filename, null, meta_list);
-        System.out.println("upload_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
-        if (results != null) {
-          System.err.println("slave file group_name: " + results[0] + ", remote_filename: " + results[1]);
-
-          generated_slave_filename = ProtoCommon.genSlaveFilename(master_filename, prefix_name, file_ext_name);
-          if (!generated_slave_filename.equals(results[1])) {
-            System.err.println("generated slave file: " + generated_slave_filename + "\n != returned slave file: " + results[1]);
-          }
-
-          System.err.println(client.get_file_info(results[0], results[1]));
+        errno = client.append_file(group_name, appender_filename, local_filename);
+        System.out.println("append_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          System.err.println(client.get_file_info(group_name, appender_filename));
+        } else {
+          System.err.println("append file fail, error no: " + errno);
         }
       }
 
@@ -255,7 +241,7 @@ public class TestClient {
         file_ext_name = null;
       }
 
-      results = client.upload_file(null, f.length(),
+      results = client.upload_appender_file(null, f.length(),
         new UploadLocalFileSender(local_filename), file_ext_name, meta_list);
       if (results != null) {
         group_name = results[0];
@@ -264,20 +250,32 @@ public class TestClient {
         System.out.println("group name: " + group_name + ", remote filename: " + remote_filename);
         System.out.println(client.get_file_info(group_name, remote_filename));
 
-        master_filename = remote_filename;
-        prefix_name = "-part3";
+        appender_filename = remote_filename;
         startTime = System.currentTimeMillis();
-        results = client.upload_file(group_name, master_filename, prefix_name, f.length(), new UploadLocalFileSender(local_filename), file_ext_name, meta_list);
-        System.out.println("upload_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
-        if (results != null) {
-          System.err.println("slave file group_name: " + results[0] + ", remote_filename: " + results[1]);
+        errno = client.append_file(group_name, appender_filename, f.length(), new UploadLocalFileSender(local_filename));
+        System.out.println("append_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          System.err.println(client.get_file_info(group_name, appender_filename));
+        } else {
+          System.err.println("append file fail, error no: " + errno);
+        }
 
-          generated_slave_filename = ProtoCommon.genSlaveFilename(master_filename, prefix_name, file_ext_name);
-          if (!generated_slave_filename.equals(results[1])) {
-            System.err.println("generated slave file: " + generated_slave_filename + "\n != returned slave file: " + results[1]);
-          }
+        startTime = System.currentTimeMillis();
+        errno = client.modify_file(group_name, appender_filename, 0, f.length(), new UploadLocalFileSender(local_filename));
+        System.out.println("modify_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          System.err.println(client.get_file_info(group_name, appender_filename));
+        } else {
+          System.err.println("modify file fail, error no: " + errno);
+        }
 
-          System.err.println(client.get_file_info(results[0], results[1]));
+        startTime = System.currentTimeMillis();
+        errno = client.truncate_file(group_name, appender_filename);
+        System.out.println("truncate_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          System.err.println(client.get_file_info(group_name, appender_filename));
+        } else {
+          System.err.println("truncate file fail, error no: " + errno);
         }
       } else {
         System.err.println("Upload file fail, error no: " + errno);
