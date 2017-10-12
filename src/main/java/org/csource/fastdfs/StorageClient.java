@@ -614,7 +614,7 @@ public class StorageClient {
    * <ul><li> results[1]: the new created filename</li></ul>
    * return null if fail
    */
-  protected String[] do_upload_file(byte cmd, String group_name, String master_filename,
+  protected synchronized String[] do_upload_file(byte cmd, String group_name, String master_filename,
                                     String prefix_name, String file_ext_name, long file_size, UploadCallback callback,
                                     NameValuePair[] meta_list) throws IOException, MyException {
     byte[] header;
