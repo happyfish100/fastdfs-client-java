@@ -25,3 +25,5 @@ java -cp <fastdfs_client_jar_filename> org.csource.fastdfs.test.Monitor <config_
 
 eg.:
 java -cp <fastdfs_client_jar_filename> org.csource.fastdfs.test.Monitor fdfs_client.conf
+
+change by wmz
