@@ -8,7 +8,7 @@ import java.util.Properties;
 public class ClientGlobalTests {
 
   public static void main(String[] args) throws Exception {
-    String trackerServers = "10.0.11.101:22122,10.0.11.102:22122";
+    String trackerServers = "192.168.108.50:22122";
     ClientGlobal.initByTrackers(trackerServers);
     System.out.println("ClientGlobal.configInfo() : " + ClientGlobal.configInfo());
 
@@ -17,7 +17,7 @@ public class ClientGlobalTests {
     System.out.println("ClientGlobal.configInfo() : " + ClientGlobal.configInfo());
 
     Properties props = new Properties();
-    props.put(ClientGlobal.PROP_KEY_TRACKER_SERVERS, "10.0.11.101:22122,10.0.11.102:22122");
+    props.put(ClientGlobal.PROP_KEY_TRACKER_SERVERS, "192.168.108.50:22122");
     ClientGlobal.initByProperties(props);
     System.out.println("ClientGlobal.configInfo(): " + ClientGlobal.configInfo());
 
