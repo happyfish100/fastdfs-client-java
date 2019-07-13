@@ -12,3 +12,6 @@ target
 *.iws
 *.log
 .idea
+
+*.conf
+*.PNG
