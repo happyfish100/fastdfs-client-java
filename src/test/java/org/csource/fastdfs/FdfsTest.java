@@ -36,20 +36,19 @@ public class FdfsTest {
         storageClient = new StorageClient(trackerServer, storageServer);
     }
 
-//    @After
-//    public void closeClient() {
-//        LOGGER.info("close connection");
-//        if(trackerServer != null){
-//            try {
-//                trackerServer.close();
-//                trackerServer.finalize();
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }catch (Throwable e){
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @After
+    public void closeClient() {
+        LOGGER.info("close connection");
+        if(trackerServer != null){
+            try {
+                trackerServer.finalize();
+            }catch (Exception e){
+                e.printStackTrace();
+            }catch (Throwable e){
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void writeByteToFile(byte[] fbyte, String fileName) throws IOException {
         BufferedOutputStream bos = null;
