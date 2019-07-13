@@ -1756,6 +1756,10 @@ public class StorageClient {
     return trackerServer.isAvaliable();
   }
 
+  public void close() throws IOException {
+    trackerServer.close();
+  }
+
   /**
    * Upload file by file buff
    *
