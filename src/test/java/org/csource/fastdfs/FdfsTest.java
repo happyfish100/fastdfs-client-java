@@ -36,20 +36,20 @@ public class FdfsTest {
         storageClient = new StorageClient(trackerServer, storageServer);
     }
 
-    @After
-    public void closeClient() {
-        LOGGER.info("close connection");
-        if(trackerServer != null){
-            try {
-                trackerServer.close();
-                trackerServer.finalize();
-            }catch (Exception e){
-                e.printStackTrace();
-            }catch (Throwable e){
-                e.printStackTrace();
-            }
-        }
-    }
+//    @After
+//    public void closeClient() {
+//        LOGGER.info("close connection");
+//        if(trackerServer != null){
+//            try {
+//                trackerServer.close();
+//                trackerServer.finalize();
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }catch (Throwable e){
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public void writeByteToFile(byte[] fbyte, String fileName) throws IOException {
         BufferedOutputStream bos = null;
@@ -94,6 +94,27 @@ public class FdfsTest {
         writeByteToFile(result, local_filename);
         File file = new File(local_filename);
         Assert.assertTrue(file.isFile());
+    }
+
+    @Test
+    public void testUploadDownload() throws Exception {
+        NameValuePair[] metaList = new NameValuePair[1];
+        String local_filename = "build.PNG";
+        metaList[0] = new NameValuePair("fileName", local_filename);
+        File file = new File("C:/Users/chengdu/Desktop/build.PNG");
+        InputStream inputStream = new FileInputStream(file);
+        int length = inputStream.available();
+        byte[] bytes = new byte[length];
+        inputStream.read(bytes);
+        String[] result = storageClient.upload_file(bytes, null, metaList);
+        Assert.assertTrue(storageClient.isConnected());
+        // pool testOnborrow  isAvaliable
+        Assert.assertTrue(storageClient.isAvaliable());
+        LOGGER.info("result {}", Arrays.asList(result));
+        byte[] resultbytes = storageClient.download_file(result[0], result[1]);
+        writeByteToFile(resultbytes, local_filename);
+        File downfile = new File(local_filename);
+        Assert.assertTrue(downfile.isFile());
     }
 
 }

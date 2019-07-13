@@ -1748,6 +1748,14 @@ public class StorageClient {
     this.storageServer.getSocket().getOutputStream().write(wholePkg);
   }
 
+  public boolean isConnected(){
+    return trackerServer.isConnected();
+  }
+
+  public boolean isAvaliable(){
+    return trackerServer.isAvaliable();
+  }
+
   /**
    * Upload file by file buff
    *
