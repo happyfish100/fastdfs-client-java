@@ -28,6 +28,8 @@ public class StorageClient {
   protected StorageServer storageServer;
   protected byte errno;
 
+
+
   /**
    * constructor using global settings in class ClientGlobal
    */
@@ -1758,6 +1760,22 @@ public class StorageClient {
 
   public void close() throws IOException {
     trackerServer.close();
+  }
+
+  public TrackerServer getTrackerServer() {
+    return trackerServer;
+  }
+
+  public void setTrackerServer(TrackerServer trackerServer) {
+    this.trackerServer = trackerServer;
+  }
+
+  public StorageServer getStorageServer() {
+    return storageServer;
+  }
+
+  public void setStorageServer(StorageServer storageServer) {
+    this.storageServer = storageServer;
   }
 
   /**

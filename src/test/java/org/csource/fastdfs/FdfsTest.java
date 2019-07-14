@@ -39,9 +39,9 @@ public class FdfsTest {
     @After
     public void closeClient() {
         LOGGER.info("close connection");
-        if(trackerServer != null){
+        if(storageClient != null){
             try {
-                trackerServer.finalize();
+               storageClient.close();
             }catch (Exception e){
                 e.printStackTrace();
             }catch (Throwable e){
