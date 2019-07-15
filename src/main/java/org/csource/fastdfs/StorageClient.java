@@ -28,6 +28,8 @@ public class StorageClient {
   protected StorageServer storageServer;
   protected byte errno;
 
+
+
   /**
    * constructor using global settings in class ClientGlobal
    */
@@ -1746,6 +1748,34 @@ public class StorageClient {
     System.arraycopy(groupBytes, 0, wholePkg, header.length + bsOffset.length + bsDownBytes.length, groupBytes.length);
     System.arraycopy(filenameBytes, 0, wholePkg, header.length + bsOffset.length + bsDownBytes.length + groupBytes.length, filenameBytes.length);
     this.storageServer.getSocket().getOutputStream().write(wholePkg);
+  }
+
+  public boolean isConnected(){
+    return trackerServer.isConnected();
+  }
+
+  public boolean isAvaliable(){
+    return trackerServer.isAvaliable();
+  }
+
+  public void close() throws IOException {
+    trackerServer.close();
+  }
+
+  public TrackerServer getTrackerServer() {
+    return trackerServer;
+  }
+
+  public void setTrackerServer(TrackerServer trackerServer) {
+    this.trackerServer = trackerServer;
+  }
+
+  public StorageServer getStorageServer() {
+    return storageServer;
+  }
+
+  public void setStorageServer(StorageServer storageServer) {
+    this.storageServer = storageServer;
   }
 
   /**
