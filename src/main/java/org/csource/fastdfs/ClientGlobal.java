@@ -3,7 +3,7 @@
  * <p>
  * FastDFS Java Client may be copied only under the terms of the GNU Lesser
  * General Public License (LGPL).
- * Please visit the FastDFS Home Page http://www.csource.org/ for more detail.
+ * Please visit the FastDFS Home Page https://github.com/happyfish100/fastdfs for more detail.
  **/
 
 package org.csource.fastdfs;
