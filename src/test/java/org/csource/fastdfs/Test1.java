@@ -6,42 +6,57 @@ import org.csource.fastdfs.*;
 import java.net.InetSocketAddress;
 
 public class Test1 {
-  public static void main(String args[]) {
-    try {
-      ClientGlobal.init("fdfs_client.conf");
-      System.out.println("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
-      System.out.println("charset=" + ClientGlobal.g_charset);
+    public static void main(String args[]) {
+        try {
 
-      TrackerGroup tg = new TrackerGroup(new InetSocketAddress[]{new InetSocketAddress("10.0.11.243", 22122)});
-      TrackerClient tc = new TrackerClient(tg);
+            if (args.length < 1) {
+                System.out.println("Usage: 2 parameters, one is config filename, "
+                        + "the other is the local filename to upload");
+                return;
+            }
 
-      TrackerServer ts = tc.getConnection();
-      if (ts == null) {
-        System.out.println("getConnection return null");
-        return;
-      }
+            System.out.println("java.version=" + System.getProperty("java.version"));
 
-      StorageServer ss = tc.getStoreStorage(ts);
-      if (ss == null) {
-        System.out.println("getStoreStorage return null");
-      }
+            String conf_filename = args[0];
+            String local_filename;
+            String ext_name;
+            if (args.length > 1) {
+                local_filename = args[1];
+                ext_name = null;
+            }
+            else if (System.getProperty("os.name").equalsIgnoreCase("windows")) {
+                local_filename = "c:/windows/system32/notepad.exe";
+                ext_name = "exe";
+            } else {
+                local_filename = "/etc/hosts";
+                ext_name = "";
+            }
 
-      StorageClient1 sc1 = new StorageClient1(ts, ss);
+            ClientGlobal.init(conf_filename);
+            System.out.println("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
+            System.out.println("charset=" + ClientGlobal.g_charset);
 
-      NameValuePair[] meta_list = null;  //new NameValuePair[0];
-      String item;
-      String fileid;
-      if (System.getProperty("os.name").equalsIgnoreCase("windows")) {
-        item = "c:/windows/system32/notepad.exe";
-        fileid = sc1.upload_file1(item, "exe", meta_list);
-      } else {
-        item = "/etc/hosts";
-        fileid = sc1.upload_file1(item, "", meta_list);
-      }
+            TrackerGroup tg = new TrackerGroup(new InetSocketAddress[]{new InetSocketAddress("47.95.221.159", 22122)});
+            TrackerClient tc = new TrackerClient(tg);
 
-      System.out.println("Upload local file " + item + " ok, fileid=" + fileid);
-    } catch (Exception ex) {
-      ex.printStackTrace();
+            TrackerServer ts = tc.getConnection();
+            if (ts == null) {
+                System.out.println("getConnection return null");
+                return;
+            }
+
+            StorageServer ss = tc.getStoreStorage(ts);
+            if (ss == null) {
+                System.out.println("getStoreStorage return null");
+            }
+
+            StorageClient1 sc1 = new StorageClient1(ts, ss);
+
+            NameValuePair[] meta_list = null;  //new NameValuePair[0];
+            String fileid = sc1.upload_file1(local_filename, ext_name, meta_list);
+            System.out.println("Upload local file " + local_filename + " ok, fileid: " + fileid);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
-  }
 }

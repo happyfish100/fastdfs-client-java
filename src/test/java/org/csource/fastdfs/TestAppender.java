@@ -169,6 +169,17 @@ public class TestAppender {
         }
 
         startTime = System.currentTimeMillis();
+        results  = client.regenerate_appender_filename(group_name, appender_filename);
+        System.out.println("regenerate_appender_filename time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          group_name = results[0];
+          appender_filename = results[1];
+          System.err.println(client.get_file_info(group_name, appender_filename));
+        } else {
+          System.err.println("regenerate_appender_filename fail, error no: " + errno);
+        }
+
+        startTime = System.currentTimeMillis();
         errno = client.delete_file(group_name, remote_filename);
         System.out.println("delete_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
         if (errno == 0) {

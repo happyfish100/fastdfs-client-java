@@ -15,9 +15,11 @@ import java.io.IOException;
 
 /**
  * Storage client for 1 field file id: combined group name and filename
+ * Note: the instance of this class is NOT thread safe !!!
+ *       if not necessary, do NOT set storage server instance
  *
  * @author Happy Fish / YuQing
- * @version Version 1.21
+ * @version Version 1.27
  */
 public class StorageClient1 extends StorageClient {
   public static final String SPLIT_GROUP_NAME_AND_FILENAME_SEPERATOR = "/";
@@ -30,7 +32,17 @@ public class StorageClient1 extends StorageClient {
   }
 
   /**
-   * constructor
+   * constructor with trackerServer
+   *
+   * @param trackerServer the tracker server, can be null
+   */
+  public StorageClient1(TrackerServer trackerServer) {
+    super(trackerServer);
+  }
+
+  /**
+   * constructor with trackerServer and storageServer
+   * NOTE: if not necessary, do NOT set storage server instance
    *
    * @param trackerServer the tracker server, can be null
    * @param storageServer the storage server, can be null
@@ -512,6 +524,27 @@ public class StorageClient1 extends StorageClient {
     }
 
     return this.modify_file(parts[0], parts[1], file_offset, modify_size, callback);
+  }
+
+  /**
+   * regenerate filename for appender file
+   *
+   * @param appender_file_id the appender file id
+   * @return the regenerated file id, return null if fail
+   */
+  public String regenerate_appender_filename1(String appender_file_id) throws IOException, MyException {
+    String[] parts = new String[2];
+    this.errno = this.split_file_id(appender_file_id, parts);
+    if (this.errno != 0) {
+      return null;
+    }
+
+    String[] new_parts = this.regenerate_appender_filename(parts[0], parts[1]);
+    if (new_parts != null) {
+      return new_parts[0] + SPLIT_GROUP_NAME_AND_FILENAME_SEPERATOR + new_parts[1];
+    } else {
+      return null;
+    }
   }
 
   /**

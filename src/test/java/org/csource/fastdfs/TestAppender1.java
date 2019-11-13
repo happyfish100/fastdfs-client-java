@@ -161,6 +161,16 @@ public class TestAppender1 {
         }
 
         startTime = System.currentTimeMillis();
+        String new_file_id = client.regenerate_appender_filename1(appender_file_id);
+        System.out.println("regenerate_appender_filename time used: " + (System.currentTimeMillis() - startTime) + " ms");
+        if (errno == 0) {
+          appender_file_id = new_file_id;
+          System.err.println(client.get_file_info1(appender_file_id));
+        } else {
+          System.err.println("regenerate_appender_filename fail, error no: " + errno);
+        }
+
+        startTime = System.currentTimeMillis();
         errno = client.delete_file1(appender_file_id);
         System.out.println("delete_file time used: " + (System.currentTimeMillis() - startTime) + " ms");
         if (errno == 0) {

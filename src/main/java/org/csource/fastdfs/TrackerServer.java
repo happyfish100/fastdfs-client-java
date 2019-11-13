@@ -81,29 +81,29 @@ public class TrackerServer {
 
   public boolean isConnected(){
     boolean isConnected = false;
-    if (sock != null){
-      if (sock.isConnected()){
+    if (sock != null) {
+      if (sock.isConnected()) {
         isConnected = true;
       }
     }
     return isConnected;
   }
 
-  public boolean isAvaliable(){
-    if(isConnected()){
-      if(sock.getPort() == 0){
+  public boolean isAvaliable() {
+    if (isConnected()) {
+      if (sock.getPort() == 0) {
         return false;
       }
-      if(sock.getInetAddress() == null){
+      if (sock.getInetAddress() == null) {
         return false;
       }
-      if(sock.getRemoteSocketAddress() == null){
+      if (sock.getRemoteSocketAddress() == null) {
         return false;
       }
-      if(sock.isInputShutdown()){
+      if (sock.isInputShutdown()) {
         return false;
       }
-      if(sock.isOutputShutdown()){
+      if (sock.isOutputShutdown()) {
         return false;
       }
       return true;

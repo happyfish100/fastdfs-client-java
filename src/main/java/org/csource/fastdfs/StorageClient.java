@@ -19,17 +19,16 @@ import java.util.Arrays;
 /**
  * Storage client for 2 fields file id: group name and filename
  * Note: the instance of this class is NOT thread safe !!!
+ *       if not necessary, do NOT set storage server instance
  *
  * @author Happy Fish / YuQing
- * @version Version 1.24
+ * @version Version 1.27
  */
 public class StorageClient {
   public final static Base64 base64 = new Base64('-', '_', '.', 0);
   protected TrackerServer trackerServer;
   protected StorageServer storageServer;
   protected byte errno;
-
-
 
   /**
    * constructor using global settings in class ClientGlobal
@@ -40,7 +39,18 @@ public class StorageClient {
   }
 
   /**
+   * constructor with tracker server
+   *
+   * @param trackerServer the tracker server, can be null
+   */
+  public StorageClient(TrackerServer trackerServer) {
+    this.trackerServer = trackerServer;
+    this.storageServer = null;
+  }
+
+  /**
    * constructor with tracker server and storage server
+   * NOTE: if not necessary, do NOT set storage server instance
    *
    * @param trackerServer the tracker server, can be null
    * @param storageServer the storage server, can be null
@@ -599,6 +609,94 @@ public class StorageClient {
                          long file_offset, long modify_size, UploadCallback callback) throws IOException, MyException {
     return this.do_modify_file(group_name, appender_filename, file_offset,
       modify_size, callback);
+  }
+
+  /**
+   * regenerate filename for appender file
+   *
+   * @param group_name        the group name of appender file
+   * @param appender_filename the appender filename
+   * @return 2 elements string array if success:<br>
+   * <ul><li> results[0]: the group name to store the file</li></ul>
+   * <ul><li> results[1]: the new created filename</li></ul>
+   * return null if fail
+   */
+  public String[] regenerate_appender_filename(String group_name, String appender_filename) throws IOException, MyException {
+    byte[] header;
+    boolean bNewConnection;
+    Socket storageSocket;
+    byte[] hexLenBytes;
+    byte[] appenderFilenameBytes;
+    int offset;
+    long body_len;
+
+    if ((group_name == null || group_name.length() == 0) ||
+      (appender_filename == null || appender_filename.length() == 0)) {
+      this.errno = ProtoCommon.ERR_NO_EINVAL;
+      return null;
+    }
+
+    bNewConnection = this.newUpdatableStorageConnection(group_name, appender_filename);
+
+    try {
+      storageSocket = this.storageServer.getSocket();
+
+      appenderFilenameBytes = appender_filename.getBytes(ClientGlobal.g_charset);
+      body_len = appenderFilenameBytes.length;
+
+      header = ProtoCommon.packHeader(ProtoCommon.STORAGE_PROTO_CMD_REGENERATE_APPENDER_FILENAME, body_len, (byte) 0);
+      byte[] wholePkg = new byte[(int) (header.length + body_len)];
+      System.arraycopy(header, 0, wholePkg, 0, header.length);
+      offset = header.length;
+
+      System.arraycopy(appenderFilenameBytes, 0, wholePkg, offset, appenderFilenameBytes.length);
+      offset += appenderFilenameBytes.length;
+
+      OutputStream out = storageSocket.getOutputStream();
+      out.write(wholePkg);
+
+      ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(storageSocket.getInputStream(),
+        ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+      this.errno = pkgInfo.errno;
+      if (pkgInfo.errno != 0) {
+        return null;
+      }
+
+      if (pkgInfo.body.length <= ProtoCommon.FDFS_GROUP_NAME_MAX_LEN) {
+        throw new MyException("body length: " + pkgInfo.body.length + " <= " + ProtoCommon.FDFS_GROUP_NAME_MAX_LEN);
+      }
+
+      String new_group_name = new String(pkgInfo.body, 0, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN).trim();
+      String remote_filename = new String(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN,
+              pkgInfo.body.length - ProtoCommon.FDFS_GROUP_NAME_MAX_LEN);
+      String[] results = new String[2];
+      results[0] = new_group_name;
+      results[1] = remote_filename;
+
+      return results;
+    } catch (IOException ex) {
+      if (!bNewConnection) {
+        try {
+          this.storageServer.close();
+        } catch (IOException ex1) {
+          ex1.printStackTrace();
+        } finally {
+          this.storageServer = null;
+        }
+      }
+
+      throw ex;
+    } finally {
+      if (bNewConnection) {
+        try {
+          this.storageServer.close();
+        } catch (IOException ex1) {
+          ex1.printStackTrace();
+        } finally {
+          this.storageServer = null;
+        }
+      }
+    }
   }
 
   /**
@@ -1514,26 +1612,42 @@ public class StorageClient {
     byte[] buff = base64.decodeAuto(remote_filename.substring(ProtoCommon.FDFS_FILE_PATH_LEN,
       ProtoCommon.FDFS_FILE_PATH_LEN + ProtoCommon.FDFS_FILENAME_BASE64_LENGTH));
 
+    short file_type;
     long file_size = ProtoCommon.buff2long(buff, 4 * 2);
-    if (((remote_filename.length() > ProtoCommon.TRUNK_LOGIC_FILENAME_LENGTH) ||
-      ((remote_filename.length() > ProtoCommon.NORMAL_LOGIC_FILENAME_LENGTH) && ((file_size & ProtoCommon.TRUNK_FILE_MARK_SIZE) == 0))) ||
-      ((file_size & ProtoCommon.APPENDER_FILE_SIZE) != 0)) { //slave file or appender file
+    if (((file_size & ProtoCommon.APPENDER_FILE_SIZE) != 0))
+    {
+        file_type = FileInfo.FILE_TYPE_APPENDER;
+    }
+    else if ((remote_filename.length() > ProtoCommon.TRUNK_LOGIC_FILENAME_LENGTH) ||
+            ((remote_filename.length() > ProtoCommon.NORMAL_LOGIC_FILENAME_LENGTH) &&
+             ((file_size & ProtoCommon.TRUNK_FILE_MARK_SIZE) == 0)))
+    {
+        file_type = FileInfo.FILE_TYPE_SLAVE;
+    }
+    else {
+        file_type = FileInfo.FILE_TYPE_NORMAL;
+    }
+
+    if (file_type == FileInfo.FILE_TYPE_SLAVE ||
+        file_type == FileInfo.FILE_TYPE_APPENDER)
+    { //slave file or appender file
       FileInfo fi = this.query_file_info(group_name, remote_filename);
       if (fi == null) {
         return null;
       }
+
+      fi.setFileType(file_type);
       return fi;
     }
 
-    FileInfo fileInfo = new FileInfo(file_size, 0, 0, ProtoCommon.getIpAddress(buff, 0));
-    fileInfo.setCreateTimestamp(ProtoCommon.buff2int(buff, 4));
+    int create_timestamp = ProtoCommon.buff2int(buff, 4);
     if ((file_size >> 63) != 0) {
       file_size &= 0xFFFFFFFFL;  //low 32 bits is file size
-      fileInfo.setFileSize(file_size);
     }
-    fileInfo.setCrc32(ProtoCommon.buff2int(buff, 4 * 4));
+    int crc32 = ProtoCommon.buff2int(buff, 4 * 4);
 
-    return fileInfo;
+    return new FileInfo(false, file_type, file_size, create_timestamp,
+            crc32, ProtoCommon.getIpAddress(buff, 0));
   }
 
   /**
@@ -1590,7 +1704,8 @@ public class StorageClient {
       int create_timestamp = (int) ProtoCommon.buff2long(pkgInfo.body, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
       int crc32 = (int) ProtoCommon.buff2long(pkgInfo.body, 2 * ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
       String source_ip_addr = (new String(pkgInfo.body, 3 * ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE, ProtoCommon.FDFS_IPADDR_SIZE)).trim();
-      return new FileInfo(file_size, create_timestamp, crc32, source_ip_addr);
+      return new FileInfo(true, FileInfo.FILE_TYPE_NORMAL, file_size,
+              create_timestamp, crc32, source_ip_addr);
     } catch (IOException ex) {
       if (!bNewConnection) {
         try {
