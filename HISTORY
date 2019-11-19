@@ -2,6 +2,7 @@
 Version 1.27  2019-11-11
   * StorageClient add function: regenerate_filename for appender file
     StorageClient1 add function: regenerate_filename1 for appender file
+  * you must upgrade your FastDFS server to V6.02 or higher version
 
 Version 1.26  2017-04-17
   * IniFileReader use getResourceAsStream first
