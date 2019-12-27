@@ -40,11 +40,7 @@ public class TrackerGroup {
    * @return connected tracker server, null for fail
    */
   public TrackerServer getConnection(int serverIndex) throws IOException {
-    Socket sock = new Socket();
-    sock.setReuseAddress(true);
-    sock.setSoTimeout(ClientGlobal.g_network_timeout);
-    sock.connect(this.tracker_servers[serverIndex], ClientGlobal.g_connect_timeout);
-    return new TrackerServer(sock, this.tracker_servers[serverIndex]);
+    return new TrackerServer(this.tracker_servers[serverIndex]);
   }
 
   /**

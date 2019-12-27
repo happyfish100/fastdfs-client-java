@@ -15,7 +15,7 @@ package org.csource.common;
  * @version Version 1.0
  */
 public class MyException extends Exception {
-  public MyException() {
+  public MyException(String s, Exception e) {
   }
 
   public MyException(String message) {
