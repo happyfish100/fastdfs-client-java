@@ -38,7 +38,7 @@ public class ConnectionPool {
             ConnectionManager connectionManager = CP.get(key);
             connectionManager.closeConnection(new ConnectionInfo(trackerServer.getSocket(), trackerServer.getInetSocketAddress(),trackerServer.getLastAccessTime(),true));
         } else {
-            trackerServer.close();
+            trackerServer.closeDirect();
         }
     }
 
@@ -51,7 +51,7 @@ public class ConnectionPool {
             ConnectionManager connectionManager = CP.get(key);
             connectionManager.freeConnection(trackerServer);
         } else {
-            trackerServer.close();
+            trackerServer.closeDirect();
         }
     }
 

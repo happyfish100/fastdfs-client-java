@@ -86,12 +86,20 @@ public class TrackerServer {
         if (ClientGlobal.g_connection_pool_enabled) {
             ConnectionPool.freeConnection(this);
         } else {
-            if (this.sock != null) {
-                try {
-                    ProtoCommon.closeSocket(this.sock);
-                } finally {
-                    this.sock = null;
-                }
+            this.closeDirect();
+        }
+    }
+
+    /**
+     * close direct if not create from pool or not open pool
+     * @throws IOException
+     */
+    public void closeDirect() throws IOException {
+        if (this.sock != null) {
+            try {
+                ProtoCommon.closeSocket(this.sock);
+            } finally {
+                this.sock = null;
             }
         }
     }
