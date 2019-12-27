@@ -113,10 +113,10 @@ public class ConnectionManager {
         if (trackerServer == null || trackerServer.getSocket() == null) {
             return;
         }
+        ConnectionInfo connectionInfo = new ConnectionInfo(trackerServer.getSocket(),trackerServer.getInetSocketAddress(),System.currentTimeMillis(),true);
         if ((System.currentTimeMillis() - trackerServer.getLastAccessTime()) < ClientGlobal.getG_connection_pool_max_idle_time()) {
             try {
                 lock.lock();
-                ConnectionInfo connectionInfo = new ConnectionInfo(trackerServer.getSocket(),trackerServer.getInetSocketAddress(),System.currentTimeMillis(),true);
                 freeConnections.add(connectionInfo);
                 freeCount.incrementAndGet();
                 condition.signal();
@@ -124,8 +124,7 @@ public class ConnectionManager {
                 lock.unlock();
             }
         } else {
-            trackerServer.close();
-            totalCount.decrementAndGet();
+            closeConnection(connectionInfo);
         }
     }
 
