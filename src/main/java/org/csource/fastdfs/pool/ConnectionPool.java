@@ -36,7 +36,11 @@ public class ConnectionPool {
         String key = getKey(trackerServer.getInetSocketAddress());
         if (key != null) {
             ConnectionManager connectionManager = CP.get(key);
-            connectionManager.closeConnection(new ConnectionInfo(trackerServer.getSocket(), trackerServer.getInetSocketAddress(),trackerServer.getLastAccessTime(),true));
+            if (connectionManager != null) {
+                connectionManager.closeConnection(new ConnectionInfo(trackerServer.getSocket(), trackerServer.getInetSocketAddress(),trackerServer.getLastAccessTime(),true));
+            } else {
+                trackerServer.closeDirect();
+            }
         } else {
             trackerServer.closeDirect();
         }
@@ -49,7 +53,13 @@ public class ConnectionPool {
         String key = getKey(trackerServer.getInetSocketAddress());
         if (key != null) {
             ConnectionManager connectionManager = CP.get(key);
-            connectionManager.freeConnection(trackerServer);
+            if (connectionManager != null) {
+                ConnectionInfo connectionInfo = new ConnectionInfo(trackerServer.getSocket(),trackerServer.getInetSocketAddress(),System.currentTimeMillis(),true);
+                connectionManager.freeConnection(connectionInfo);
+            } else {
+                trackerServer.closeDirect();
+            }
+
         } else {
             trackerServer.closeDirect();
         }

@@ -147,4 +147,13 @@ public class TrackerServer {
     public void setLastAccessTime(Long lastAccessTime) {
         this.lastAccessTime = lastAccessTime;
     }
+
+    @Override
+    public String toString() {
+        return "TrackerServer{" +
+                "sock=" + sock +
+                ", inetSockAddr=" + inetSockAddr +
+                ", lastAccessTime=" + lastAccessTime +
+                '}';
+    }
 }

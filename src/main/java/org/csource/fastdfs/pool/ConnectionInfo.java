@@ -47,4 +47,14 @@ public class ConnectionInfo {
         this.lastAccessTime = lastAccessTime;
         this.needActiveCheck = needActiveCheck;
     }
+
+    @Override
+    public String toString() {
+        return "ConnectionInfo{" +
+                "socket=" + socket +
+                ", inetSockAddr=" + inetSockAddr +
+                ", lastAccessTime=" + lastAccessTime +
+                ", needActiveCheck=" + needActiveCheck +
+                '}';
+    }
 }

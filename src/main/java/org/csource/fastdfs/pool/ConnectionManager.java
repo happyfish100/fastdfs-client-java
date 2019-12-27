@@ -109,12 +109,11 @@ public class ConnectionManager {
         }
     }
 
-    public  void freeConnection(TrackerServer trackerServer) throws IOException {
-        if (trackerServer == null || trackerServer.getSocket() == null) {
+    public  void freeConnection(ConnectionInfo connectionInfo) throws IOException {
+        if (connectionInfo == null || connectionInfo.getSocket() == null) {
             return;
         }
-        ConnectionInfo connectionInfo = new ConnectionInfo(trackerServer.getSocket(),trackerServer.getInetSocketAddress(),System.currentTimeMillis(),true);
-        if ((System.currentTimeMillis() - trackerServer.getLastAccessTime()) < ClientGlobal.getG_connection_pool_max_idle_time()) {
+        if ((System.currentTimeMillis() - connectionInfo.getLastAccessTime()) < ClientGlobal.getG_connection_pool_max_idle_time()) {
             try {
                 lock.lock();
                 freeConnections.add(connectionInfo);
