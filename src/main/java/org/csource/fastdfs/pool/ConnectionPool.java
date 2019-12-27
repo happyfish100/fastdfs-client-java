@@ -54,8 +54,7 @@ public class ConnectionPool {
         if (key != null) {
             ConnectionManager connectionManager = CP.get(key);
             if (connectionManager != null) {
-                ConnectionInfo connectionInfo = new ConnectionInfo(trackerServer.getSocket(),trackerServer.getInetSocketAddress(),System.currentTimeMillis(),true);
-                connectionManager.freeConnection(connectionInfo);
+                connectionManager.freeConnection(trackerServer);
             } else {
                 trackerServer.closeDirect();
             }
