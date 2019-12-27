@@ -57,9 +57,9 @@ public class ClientGlobal {
   public static final int DEFAULT_HTTP_TRACKER_HTTP_PORT = 80;
 
   public static final boolean DEFAULT_CONNECTION_POOL_ENABLED = true;
-  public static final int DEFAULT_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = 50;
+  public static final int DEFAULT_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = 100;
   public static final int DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME = 60 ;//second
-  public static final int DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME = 3 ;//second
+  public static final int DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME = 5 ;//second
 
   public static int g_connect_timeout = DEFAULT_CONNECT_TIMEOUT * 1000; //millisecond
   public static int g_network_timeout = DEFAULT_NETWORK_TIMEOUT * 1000; //millisecond

@@ -15,7 +15,7 @@ fastdfs.tracker_servers = 185.245.40.70:22122
 fastdfs.connection_pool.enabled = false
 
 ## max_count_per_entry: max connection count per host:port , 0 is not limit
-fastdfs.connection_pool.max_count_per_entry = 2
+fastdfs.connection_pool.max_count_per_entry = 100
 
 fastdfs.connection_pool.max_idle_time = 60
 fastdfs.connection_pool.max_wait_time = 5
