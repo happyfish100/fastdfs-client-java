@@ -11,4 +11,4 @@ tracker_server = 10.0.11.244:22122
 connection_pool.enabled = false
 connection_pool.max_count_per_entry = 100
 connection_pool.max_idle_time = 60
-connection_pool.max_wait_time = 5
+connection_pool.max_wait_time_in_ms = 5000

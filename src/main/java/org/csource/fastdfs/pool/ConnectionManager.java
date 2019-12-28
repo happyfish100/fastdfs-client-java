@@ -1,9 +1,7 @@
 package org.csource.fastdfs.pool;
 
+import org.csource.common.MyException;
 import org.csource.fastdfs.ClientGlobal;
-import org.csource.fastdfs.ProtoCommon;
-import org.csource.fastdfs.TrackerServer;
-
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +35,7 @@ public class ConnectionManager {
     /**
      * free connections
      */
-    private volatile ConcurrentLinkedQueue<ConnectionInfo> freeConnections = new ConcurrentLinkedQueue<ConnectionInfo>();
+    private volatile ConcurrentLinkedQueue<Connection> freeConnections = new ConcurrentLinkedQueue<Connection>();
 
     private ConnectionManager() {
 
@@ -47,57 +45,46 @@ public class ConnectionManager {
         this.key = key;
     }
 
-    private synchronized ConnectionInfo newConnection() throws IOException {
+    private  Connection newConnection() throws IOException {
         try {
-            ConnectionInfo connectionInfo = PoolConnectionFactory.create(this.key);
-            return connectionInfo;
-
+            Connection connection = ConnectionFactory.create(this.key);
+            return connection;
         } catch (IOException e) {
             throw e;
         }
     }
 
 
-    public synchronized ConnectionInfo getConnection() throws IOException {
+    public  Connection getConnection() throws MyException {
         lock.lock();
         try {
-            ConnectionInfo connectionInfo = null;
+            Connection connection = null;
             while (true) {
                 if (freeCount.get() > 0) {
-                    connectionInfo = freeConnections.poll();
-                    if ((System.currentTimeMillis() - connectionInfo.getLastAccessTime()) > ClientGlobal.getG_connection_pool_max_idle_time()) {
-                        closeConnection(connectionInfo);
+                    freeCount.decrementAndGet();
+                    connection = freeConnections.poll();
+                    if (!connection.isAvaliable() || (System.currentTimeMillis() - connection.getLastAccessTime()) > ClientGlobal.getG_connection_pool_max_idle_time()) {
+                        closeConnection(connection);
                         continue;
-                    } else {
-                        freeCount.decrementAndGet();
                     }
                 } else if (ClientGlobal.getG_connection_pool_max_count_per_entry() == 0 || totalCount.get() < ClientGlobal.getG_connection_pool_max_count_per_entry()) {
-                    connectionInfo = newConnection();
-                    if (connectionInfo != null) {
+                    connection = newConnection();
+                    if (connection != null) {
                         totalCount.incrementAndGet();
                     }
                 } else {
                     try {
-                        if (condition.await(ClientGlobal.getG_connection_pool_max_wait_time(), TimeUnit.MILLISECONDS)) {
+                        if (condition.await(ClientGlobal.getG_connection_pool_max_wait_time_in_ms(), TimeUnit.MILLISECONDS)) {
                             //wait single success
                             continue;
                         }
+                        throw new MyException("get connection fail,  wait_time greater than " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        throw new MyException("get connection fail, emsg > " + e.getMessage());
                     }
                 }
-                //if need check active
-                if (connectionInfo.isNeedActiveCheck()) {
-                    boolean activeYes = ProtoCommon.activeTest(connectionInfo.getSocket());
-                    if (activeYes) {
-                        connectionInfo.setLastAccessTime(System.currentTimeMillis());
-                    } else {
-                        //close if check fail
-                        closeConnection(connectionInfo);
-                        continue;
-                    }
-                }
-                return connectionInfo;
+                return connection;
             }
         } catch (IOException e) {
             return null;
@@ -106,33 +93,34 @@ public class ConnectionManager {
         }
     }
 
-    public  void freeConnection(TrackerServer trackerServer) throws IOException {
-        if (trackerServer == null || !trackerServer.isConnected()) {
+    public  void releaseConnection(Connection connection) throws IOException {
+        if (connection == null) {
             return;
         }
-        ConnectionInfo connectionInfo = new ConnectionInfo(trackerServer.getSocket(),trackerServer.getInetSocketAddress(),System.currentTimeMillis(),true);
-        if ((System.currentTimeMillis() - trackerServer.getLastAccessTime()) < ClientGlobal.getG_connection_pool_max_idle_time()) {
+        if ((System.currentTimeMillis() - connection.getLastAccessTime()) < ClientGlobal.g_connection_pool_max_idle_time) {
             try {
                 lock.lock();
-                freeConnections.add(connectionInfo);
+                freeConnections.add(connection);
                 freeCount.incrementAndGet();
                 condition.signal();
             } finally {
                 lock.unlock();
             }
         } else {
-            closeConnection(connectionInfo);
+            closeConnection(connection);
         }
+
     }
 
-    public void closeConnection(ConnectionInfo connectionInfo) throws IOException {
-        if (connectionInfo.getSocket() != null) {
-            totalCount.decrementAndGet();
-            try {
-                ProtoCommon.closeSocket(connectionInfo.getSocket());
-            }  finally {
-                connectionInfo.setSocket(null);
+    public void closeConnection(Connection connection) throws IOException {
+        try {
+            if (connection != null) {
+                totalCount.decrementAndGet();
+                connection.close();
             }
+        } catch (IOException e) {
+            System.err.println("close socket error , msg:" + e.getMessage());
+            e.printStackTrace();
         }
     }
 

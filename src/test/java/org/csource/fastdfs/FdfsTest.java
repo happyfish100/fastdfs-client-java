@@ -31,7 +31,7 @@ public class FdfsTest {
         LOGGER.info("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
         LOGGER.info("charset=" + ClientGlobal.g_charset);
         TrackerClient tracker = new TrackerClient();
-        trackerServer = tracker.getConnection();
+        trackerServer = tracker.getTrackerServer();
         StorageServer storageServer = null;
         storageClient = new StorageClient(trackerServer, storageServer);
     }

@@ -8,14 +8,13 @@
 
 package org.csource.fastdfs;
 
-import org.csource.fastdfs.pool.ConnectionInfo;
+import org.csource.common.MyException;
+import org.csource.fastdfs.pool.Connection;
 import org.csource.fastdfs.pool.ConnectionPool;
+import org.csource.fastdfs.pool.ConnectionFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 
 /**
  * Tracker Server Info
@@ -24,46 +23,22 @@ import java.net.Socket;
  * @version Version 1.11
  */
 public class TrackerServer {
-    protected Socket sock;
     protected InetSocketAddress inetSockAddr;
 
-    private Long lastAccessTime = System.currentTimeMillis();
-
-    /**
-     * Constructor
-     *
-     * @param sock         Socket of server
-     * @param inetSockAddr the server info
-     */
-    public TrackerServer(Socket sock, InetSocketAddress inetSockAddr) {
-        this.sock = sock;
-        this.inetSockAddr = inetSockAddr;
-    }
 
     public TrackerServer(InetSocketAddress inetSockAddr) throws IOException {
         this.inetSockAddr = inetSockAddr;
-        this.sock = getSocket();
     }
 
-    /**
-     * get the connected socket
-     *
-     * @return the socket
-     */
-    public Socket getSocket() throws IOException {
-        if (this.sock == null) {
-            if (ClientGlobal.g_connection_pool_enabled) {
-                ConnectionInfo connection = ConnectionPool.getConnection(this.inetSockAddr);
-                this.sock = connection.getSocket();
-                this.lastAccessTime = connection.getLastAccessTime();
-            } else {
-                this.sock = ClientGlobal.getSocket(this.inetSockAddr);
-            }
+    public Connection getConnection() throws MyException, IOException {
+        Connection connection;
+        if (ClientGlobal.g_connection_pool_enabled) {
+            connection = ConnectionPool.getConnection(this.inetSockAddr);
+        } else {
+            connection = ConnectionFactory.create(this.inetSockAddr);
         }
-
-        return this.sock;
+        return connection;
     }
-
     /**
      * get the server info
      *
@@ -72,88 +47,28 @@ public class TrackerServer {
     public InetSocketAddress getInetSocketAddress() {
         return this.inetSockAddr;
     }
-
-    public OutputStream getOutputStream() throws IOException {
-        return this.sock.getOutputStream();
-    }
-
-    public InputStream getInputStream() throws IOException {
-        return this.sock.getInputStream();
-    }
-
-    public void close() throws IOException {
+    public void close(Connection connection) throws IOException {
         //if connection enabled get from connection pool
         if (ClientGlobal.g_connection_pool_enabled) {
-            ConnectionPool.freeConnection(this);
+            ConnectionPool.closeConnection(connection);
         } else {
-            this.closeDirect();
+            connection.close();
         }
     }
 
     /**
-     * close direct if not create from pool or not open pool
+     * releaseConnection connection
+     * @param connection
      * @throws IOException
      */
-    public void closeDirect() throws IOException {
-        if (this.sock != null) {
-            try {
-                ProtoCommon.closeSocket(this.sock);
-            } finally {
-                this.sock = null;
-            }
+    public void releaseConnection(Connection connection) throws IOException {
+        if (ClientGlobal.g_connection_pool_enabled) {
+            ConnectionPool.releaseConnection(connection);
+        } else {
+            connection.close();
         }
     }
 
-    protected void finalize() throws Throwable {
-        this.close();
-    }
 
-    public boolean isConnected() {
-        boolean isConnected = false;
-        if (sock != null) {
-            if (sock.isConnected()) {
-                isConnected = true;
-            }
-        }
-        return isConnected;
-    }
 
-    public boolean isAvaliable() {
-        if (isConnected()) {
-            if (sock.getPort() == 0) {
-                return false;
-            }
-            if (sock.getInetAddress() == null) {
-                return false;
-            }
-            if (sock.getRemoteSocketAddress() == null) {
-                return false;
-            }
-            if (sock.isInputShutdown()) {
-                return false;
-            }
-            if (sock.isOutputShutdown()) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public Long getLastAccessTime() {
-        return lastAccessTime;
-    }
-
-    public void setLastAccessTime(Long lastAccessTime) {
-        this.lastAccessTime = lastAccessTime;
-    }
-
-    @Override
-    public String toString() {
-        return "TrackerServer{" +
-                "sock=" + sock +
-                ", inetSockAddr=" + inetSockAddr +
-                ", lastAccessTime=" + lastAccessTime +
-                '}';
-    }
 }

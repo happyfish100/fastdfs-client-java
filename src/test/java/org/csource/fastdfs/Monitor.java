@@ -8,8 +8,6 @@
 
 package org.csource.fastdfs;
 
-import org.csource.fastdfs.*;
-
 import java.text.SimpleDateFormat;
 
 /**
@@ -48,7 +46,7 @@ public class Monitor {
   		System.out.println("delete storage errno: " + tracker.getErrorCode());
   		*/
 
-      TrackerServer trackerServer = tracker.getConnection();
+      TrackerServer trackerServer = tracker.getTrackerServer();
       if (trackerServer == null) {
         return;
       }
@@ -157,8 +155,6 @@ public class Monitor {
           System.out.println("\t\tlast_synced_timestamp = " + df.format(storageStat.getLastSyncedTimestamp()) + getSyncedDelayString(storageStats, storageStat));
         }
       }
-
-      trackerServer.close();
     } catch (Exception ex) {
       ex.printStackTrace();
     }

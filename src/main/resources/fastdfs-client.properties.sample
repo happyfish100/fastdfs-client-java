@@ -18,4 +18,4 @@ fastdfs.connection_pool.enabled = false
 fastdfs.connection_pool.max_count_per_entry = 100
 
 fastdfs.connection_pool.max_idle_time = 60
-fastdfs.connection_pool.max_wait_time = 5
+fastdfs.connection_pool.max_wait_time_in_ms = 5000

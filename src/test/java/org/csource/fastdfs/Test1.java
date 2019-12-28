@@ -1,7 +1,6 @@
 package org.csource.fastdfs;
 
 import org.csource.common.NameValuePair;
-import org.csource.fastdfs.*;
 
 import java.net.InetSocketAddress;
 
@@ -39,9 +38,9 @@ public class Test1 {
             TrackerGroup tg = new TrackerGroup(new InetSocketAddress[]{new InetSocketAddress("47.95.221.159", 22122)});
             TrackerClient tc = new TrackerClient(tg);
 
-            TrackerServer ts = tc.getConnection();
+            TrackerServer ts = tc.getTrackerServer();
             if (ts == null) {
-                System.out.println("getConnection return null");
+                System.out.println("getTrackerServer return null");
                 return;
             }
 

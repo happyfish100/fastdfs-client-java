@@ -1,6 +1,6 @@
 package org.csource.fastdfs.pool;
 
-import org.csource.fastdfs.TrackerServer;
+import org.csource.common.MyException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,54 +13,51 @@ public class ConnectionPool {
      */
     private final static ConcurrentHashMap<String, ConnectionManager> CP = new ConcurrentHashMap<String, ConnectionManager>();
 
-    public static synchronized ConnectionInfo getConnection(InetSocketAddress socketAddress) throws IOException {
+    public static Connection getConnection(InetSocketAddress socketAddress) throws MyException {
         if (socketAddress == null) {
             return null;
         }
         String key = getKey(socketAddress);
-        ConnectionManager connectionManager = CP.get(key);
-        if (connectionManager == null) {
-            connectionManager = new ConnectionManager(key);
-            CP.put(key, connectionManager);
+        ConnectionManager connectionManager;
+        synchronized (ConnectionPool.class) {
+            connectionManager = CP.get(key);
+            if (connectionManager == null) {
+                connectionManager = new ConnectionManager(key);
+                CP.put(key, connectionManager);
+            }
         }
         return connectionManager.getConnection();
     }
 
-    /**
-     * release connection
-     */
-    public static void closeConnection(TrackerServer trackerServer) throws IOException {
-        if (trackerServer == null || trackerServer.getInetSocketAddress() == null) {
+    public static void releaseConnection(Connection connection) throws IOException {
+        if (connection == null) {
             return;
         }
-        String key = getKey(trackerServer.getInetSocketAddress());
-        if (key != null) {
-            ConnectionManager connectionManager = CP.get(key);
-            if (connectionManager != null) {
-                connectionManager.closeConnection(new ConnectionInfo(trackerServer.getSocket(), trackerServer.getInetSocketAddress(),trackerServer.getLastAccessTime(),true));
-            } else {
-                trackerServer.closeDirect();
-            }
+        String key = getKey(connection.getInetSocketAddress());
+        ConnectionManager connectionManager = CP.get(key);
+        if (connectionManager != null) {
+            connectionManager.releaseConnection(connection);
         } else {
-            trackerServer.closeDirect();
+            try {
+                connection.close();
+            } catch (IOException e) {
+                System.err.println("close socket error, msg:" + e.getMessage());
+                e.printStackTrace();
+            }
         }
+
     }
 
-    public static void freeConnection(TrackerServer trackerServer) throws IOException {
-        if (trackerServer == null || trackerServer.getInetSocketAddress() == null) {
+    public static void closeConnection(Connection connection) throws IOException {
+        if (connection == null) {
             return;
         }
-        String key = getKey(trackerServer.getInetSocketAddress());
-        if (key != null) {
-            ConnectionManager connectionManager = CP.get(key);
-            if (connectionManager != null) {
-                connectionManager.freeConnection(trackerServer);
-            } else {
-                trackerServer.closeDirect();
-            }
-
+        String key = getKey(connection.getInetSocketAddress());
+        ConnectionManager connectionManager = CP.get(key);
+        if (connectionManager != null) {
+            connectionManager.closeConnection(connection);
         } else {
-            trackerServer.closeDirect();
+            connection.close();
         }
     }
 
@@ -70,6 +67,7 @@ public class ConnectionPool {
         }
         return String.format("%s:%s", socketAddress.getHostName(), socketAddress.getPort());
     }
+
     @Override
     public String toString() {
         if (!CP.isEmpty()) {

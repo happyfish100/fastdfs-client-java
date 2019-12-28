@@ -10,7 +10,6 @@ package org.csource.fastdfs;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 
 /**
  * Tracker server group
@@ -39,7 +38,7 @@ public class TrackerGroup {
    *
    * @return connected tracker server, null for fail
    */
-  public TrackerServer getConnection(int serverIndex) throws IOException {
+  public TrackerServer getTrackerServer(int serverIndex) throws IOException {
     return new TrackerServer(this.tracker_servers[serverIndex]);
   }
 
@@ -48,7 +47,7 @@ public class TrackerGroup {
    *
    * @return connected tracker server, null for fail
    */
-  public TrackerServer getConnection() throws IOException {
+  public TrackerServer getTrackerServer() throws IOException {
     int current_index;
 
     synchronized (this.lock) {
@@ -61,7 +60,7 @@ public class TrackerGroup {
     }
 
     try {
-      return this.getConnection(current_index);
+      return this.getTrackerServer(current_index);
     } catch (IOException ex) {
       System.err.println("connect to server " + this.tracker_servers[current_index].getAddress().getHostAddress() + ":" + this.tracker_servers[current_index].getPort() + " fail");
       ex.printStackTrace(System.err);
@@ -73,7 +72,7 @@ public class TrackerGroup {
       }
 
       try {
-        TrackerServer trackerServer = this.getConnection(i);
+        TrackerServer trackerServer = this.getTrackerServer(i);
 
         synchronized (this.lock) {
           if (this.tracker_server_index == current_index) {
