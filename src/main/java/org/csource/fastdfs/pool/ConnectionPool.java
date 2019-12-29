@@ -38,12 +38,7 @@ public class ConnectionPool {
         if (connectionManager != null) {
             connectionManager.releaseConnection(connection);
         } else {
-            try {
-                connection.closeDirectly();
-            } catch (IOException e) {
-                System.err.println("close socket error, msg:" + e.getMessage());
-                e.printStackTrace();
-            }
+            connection.closeDirectly();
         }
 
     }
