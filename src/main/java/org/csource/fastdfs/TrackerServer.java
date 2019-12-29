@@ -48,6 +48,9 @@ public class TrackerServer {
         return this.inetSockAddr;
     }
     public void close(Connection connection) throws IOException {
+        if (connection == null) {
+            return;
+        }
         //if connection enabled get from connection pool
         if (ClientGlobal.g_connection_pool_enabled) {
             ConnectionPool.closeConnection(connection);
@@ -62,6 +65,9 @@ public class TrackerServer {
      * @throws IOException
      */
     public void releaseConnection(Connection connection) throws IOException {
+        if (connection == null) {
+            return;
+        }
         if (ClientGlobal.g_connection_pool_enabled) {
             ConnectionPool.releaseConnection(connection);
         } else {
