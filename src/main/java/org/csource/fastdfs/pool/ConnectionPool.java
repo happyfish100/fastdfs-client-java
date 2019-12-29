@@ -13,7 +13,7 @@ public class ConnectionPool {
      */
     private final static ConcurrentHashMap<String, ConnectionManager> CP = new ConcurrentHashMap<String, ConnectionManager>();
 
-    public static Connection getConnection(InetSocketAddress socketAddress) throws MyException {
+    public static Connection getConnection(InetSocketAddress socketAddress) throws MyException, IOException {
         if (socketAddress == null) {
             return null;
         }

@@ -55,7 +55,7 @@ public class ConnectionManager {
     }
 
 
-    public  Connection getConnection() throws MyException {
+    public  Connection getConnection() throws MyException, IOException {
         lock.lock();
         try {
             Connection connection = null;
@@ -81,13 +81,14 @@ public class ConnectionManager {
                         throw new MyException("get connection fail,  wait_time greater than " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("get connection fail, emsg > " + e.getMessage());
+                        throw new MyException("get connection fail, emsg:" + e.getMessage());
                     }
                 }
                 return connection;
             }
         } catch (IOException e) {
-            return null;
+            System.err.println("get connection ERROR , emsg:" + e.getMessage());
+            throw e;
         } finally {
             lock.unlock();
         }
