@@ -209,7 +209,7 @@ public class ClientGlobal {
       g_connection_pool_max_idle_time = Integer.parseInt(poolMaxIdleTime) * 1000;
     }
     if (poolMaxWaitTimeInMS != null && poolMaxWaitTimeInMS.trim().length() != 0) {
-      g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS) * 1000;
+      g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
     }
   }
 
