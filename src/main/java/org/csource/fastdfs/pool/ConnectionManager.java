@@ -2,7 +2,9 @@ package org.csource.fastdfs.pool;
 
 import org.csource.common.MyException;
 import org.csource.fastdfs.ClientGlobal;
+
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,10 +12,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ConnectionManager {
-    /**
-     * ip:port is key
-     */
-    private String key;
+
+    private InetSocketAddress inetSocketAddress;
 
     /**
      * total create connection pool
@@ -41,21 +41,11 @@ public class ConnectionManager {
 
     }
 
-    public ConnectionManager(String key) {
-        this.key = key;
+    public ConnectionManager(InetSocketAddress socketAddress) {
+        this.inetSocketAddress = socketAddress;
     }
 
-    private  Connection newConnection() throws IOException {
-        try {
-            Connection connection = ConnectionFactory.create(this.key);
-            return connection;
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
-
-    public  Connection getConnection() throws MyException, IOException {
+    public Connection getConnection() throws MyException, IOException {
         lock.lock();
         try {
             Connection connection = null;
@@ -68,7 +58,7 @@ public class ConnectionManager {
                         continue;
                     }
                 } else if (ClientGlobal.getG_connection_pool_max_count_per_entry() == 0 || totalCount.get() < ClientGlobal.getG_connection_pool_max_count_per_entry()) {
-                    connection = newConnection();
+                    connection = ConnectionFactory.create(this.inetSocketAddress);
                     if (connection != null) {
                         totalCount.incrementAndGet();
                     }
@@ -94,21 +84,18 @@ public class ConnectionManager {
         }
     }
 
-    public  void releaseConnection(Connection connection) throws IOException {
+    public void releaseConnection(Connection connection) {
         if (connection == null) {
             return;
         }
-        if ((System.currentTimeMillis() - connection.getLastAccessTime()) < ClientGlobal.g_connection_pool_max_idle_time) {
-            try {
-                lock.lock();
-                freeConnections.add(connection);
-                freeCount.incrementAndGet();
-                condition.signal();
-            } finally {
-                lock.unlock();
-            }
-        } else {
-            closeConnection(connection);
+        lock.lock();
+        try {
+            connection.setLastAccessTime(System.currentTimeMillis());
+            freeConnections.add(connection);
+            freeCount.incrementAndGet();
+            condition.signal();
+        } finally {
+            lock.unlock();
         }
 
     }
@@ -117,21 +104,22 @@ public class ConnectionManager {
         try {
             if (connection != null) {
                 totalCount.decrementAndGet();
-                connection.close();
+                connection.closeDirectly();
             }
         } catch (IOException e) {
             System.err.println("close socket error , msg:" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
     }
 
     @Override
     public String toString() {
         return "ConnectionManager{" +
-                "key='" + key + '\'' +
+                "ip:port='" + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() +
                 ", totalCount=" + totalCount +
                 ", freeCount=" + freeCount +
-                ", linkedQueueCP=" + freeConnections +
+                ", freeConnections =" + freeConnections +
                 '}';
     }
 }

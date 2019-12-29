@@ -22,7 +22,7 @@ public class ConnectionPool {
         synchronized (ConnectionPool.class) {
             connectionManager = CP.get(key);
             if (connectionManager == null) {
-                connectionManager = new ConnectionManager(key);
+                connectionManager = new ConnectionManager(socketAddress);
                 CP.put(key, connectionManager);
             }
         }
@@ -39,7 +39,7 @@ public class ConnectionPool {
             connectionManager.releaseConnection(connection);
         } else {
             try {
-                connection.close();
+                connection.closeDirectly();
             } catch (IOException e) {
                 System.err.println("close socket error, msg:" + e.getMessage());
                 e.printStackTrace();
@@ -57,7 +57,7 @@ public class ConnectionPool {
         if (connectionManager != null) {
             connectionManager.closeConnection(connection);
         } else {
-            connection.close();
+            connection.closeDirectly();
         }
     }
 
@@ -73,7 +73,7 @@ public class ConnectionPool {
         if (!CP.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             for (Map.Entry<String, ConnectionManager> managerEntry : CP.entrySet()) {
-                builder.append("key:" + managerEntry.getKey() + " -------- entry:" + managerEntry.getValue() + "\n");
+                builder.append("key:[" + managerEntry.getKey() + " ]-------- entry:" + managerEntry.getValue() + "\n");
             }
             return builder.toString();
         }

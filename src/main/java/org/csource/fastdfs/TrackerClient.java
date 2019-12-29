@@ -13,7 +13,6 @@ import org.csource.fastdfs.pool.Connection;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.util.Arrays;
 
 /**
@@ -140,7 +139,7 @@ public class TrackerClient {
             return new StorageServer(ip_addr, port, store_path);
         } catch (IOException ex) {
             try {
-                trackerServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -150,7 +149,7 @@ public class TrackerClient {
         } finally {
             if (connection != null) {
                 try {
-                    trackerServer.releaseConnection(connection);
+                    connection.release();
                 } catch (IOException ex1) {
                     ex1.printStackTrace();
                 }
@@ -255,7 +254,7 @@ public class TrackerClient {
             return results;
         } catch (IOException ex) {
             try {
-                trackerServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -265,7 +264,7 @@ public class TrackerClient {
         } finally {
             if (connection != null) {
                 try {
-                    trackerServer.releaseConnection(connection);
+                    connection.release();
                 } catch (IOException ex1) {
                     ex1.printStackTrace();
                 }
@@ -408,7 +407,7 @@ public class TrackerClient {
             return servers;
         } catch (IOException ex) {
             try {
-                trackerServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -419,7 +418,7 @@ public class TrackerClient {
         } finally {
             if (connection != null) {
                 try {
-                    trackerServer.releaseConnection(connection);
+                    connection.release();
                 } catch (IOException ex1) {
                     ex1.printStackTrace();
                 }
@@ -501,7 +500,7 @@ public class TrackerClient {
             return decoder.decode(pkgInfo.body, StructGroupStat.class, StructGroupStat.getFieldsTotalSize());
         } catch (IOException ex) {
             try {
-                trackerServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -515,7 +514,7 @@ public class TrackerClient {
         } finally {
             if (connection != null) {
                 try {
-                    trackerServer.releaseConnection(connection);
+                    connection.release();
                 } catch (IOException ex1) {
                     ex1.printStackTrace();
                 }
@@ -606,7 +605,7 @@ public class TrackerClient {
             return decoder.decode(pkgInfo.body, StructStorageStat.class, StructStorageStat.getFieldsTotalSize());
         } catch (IOException ex) {
             try {
-                trackerServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             }
@@ -619,7 +618,7 @@ public class TrackerClient {
         } finally {
             if (connection != null) {
                 try {
-                    trackerServer.releaseConnection(connection);
+                    connection.release();
                 } catch (IOException ex1) {
                     ex1.printStackTrace();
                 }
@@ -679,14 +678,14 @@ public class TrackerClient {
             return pkgInfo.errno == 0;
         } catch (IOException e) {
             try {
-                trackerServer.close(connection);
+                connection.close();
             } finally {
                 connection = null;
             }
             throw e;
         } finally {
             if (connection != null) {
-                trackerServer.releaseConnection(connection);
+                connection.release();
             }
         }
     }

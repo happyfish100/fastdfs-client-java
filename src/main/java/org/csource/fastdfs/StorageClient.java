@@ -12,10 +12,8 @@ import org.csource.common.Base64;
 import org.csource.common.MyException;
 import org.csource.common.NameValuePair;
 import org.csource.fastdfs.pool.Connection;
-import org.omg.CORBA.CODESET_INCOMPATIBLE;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.Arrays;
 
 /**
@@ -678,7 +676,7 @@ public class StorageClient {
             return results;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -686,7 +684,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -841,7 +839,7 @@ public class StorageClient {
             return results;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -849,7 +847,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
 
         }
     }
@@ -920,7 +918,7 @@ public class StorageClient {
             return 0;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -928,14 +926,14 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
-    private void doFinally(Connection connection, boolean bNewStorageServer) {
+    private void releaseConnection(Connection connection, boolean bNewStorageServer) {
         try {
             if (connection != null) {
-                this.storageServer.releaseConnection(connection);
+                connection.release();
             }
         } catch (IOException ex1) {
             ex1.printStackTrace();
@@ -1017,7 +1015,7 @@ public class StorageClient {
             return 0;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1026,7 +1024,7 @@ public class StorageClient {
 
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1050,7 +1048,7 @@ public class StorageClient {
             return pkgInfo.errno;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1058,7 +1056,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1131,7 +1129,7 @@ public class StorageClient {
             return pkgInfo.errno;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1139,7 +1137,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1185,7 +1183,7 @@ public class StorageClient {
             return pkgInfo.body;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1193,7 +1191,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1274,7 +1272,7 @@ public class StorageClient {
             }
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1282,7 +1280,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1353,7 +1351,7 @@ public class StorageClient {
             return 0;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1361,7 +1359,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1390,7 +1388,7 @@ public class StorageClient {
             return ProtoCommon.split_metadata(new String(pkgInfo.body, ClientGlobal.g_charset));
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1398,7 +1396,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1477,7 +1475,7 @@ public class StorageClient {
             return pkgInfo.errno;
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1485,7 +1483,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 
@@ -1596,7 +1594,7 @@ public class StorageClient {
                     create_timestamp, crc32, source_ip_addr);
         } catch (IOException ex) {
             try {
-                this.storageServer.close(connection);
+                connection.close();
             } catch (IOException ex1) {
                 ex1.printStackTrace();
             } finally {
@@ -1604,7 +1602,7 @@ public class StorageClient {
             }
             throw ex;
         } finally {
-            doFinally(connection, bNewStorageServer);
+            releaseConnection(connection, bNewStorageServer);
         }
     }
 

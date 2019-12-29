@@ -1,5 +1,6 @@
 package org.csource.fastdfs.pool;
 
+import org.csource.fastdfs.ClientGlobal;
 import org.csource.fastdfs.ProtoCommon;
 
 import java.io.IOException;
@@ -45,11 +46,30 @@ public class Connection {
     }
 
     /**
-     * close direct if not create from pool or not open pool
      *
      * @throws IOException
      */
     public void close() throws IOException {
+        //if connection enabled get from connection pool
+        if (ClientGlobal.g_connection_pool_enabled) {
+            ConnectionPool.closeConnection(this);
+        } else {
+            this.closeDirectly();
+        }
+    }
+
+    public void release() throws IOException {
+        if (ClientGlobal.g_connection_pool_enabled) {
+            ConnectionPool.releaseConnection(this);
+        } else {
+            this.closeDirectly();
+        }
+    }
+
+    /**
+     * force close socket,
+     */
+    public void closeDirectly() throws IOException {
         if (this.sock != null) {
             try {
                 ProtoCommon.closeSocket(this.sock);
