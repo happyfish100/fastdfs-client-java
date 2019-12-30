@@ -53,23 +53,23 @@ public class ConnectionManager {
                 if (freeCount.get() > 0) {
                     freeCount.decrementAndGet();
                     connection = freeConnections.poll();
-                    if (!connection.isAvaliable() || (System.currentTimeMillis() - connection.getLastAccessTime()) > ClientGlobal.getG_connection_pool_max_idle_time()) {
+                    if (!connection.isAvaliable() || (System.currentTimeMillis() - connection.getLastAccessTime()) > ClientGlobal.g_connection_pool_max_idle_time) {
                         closeConnection(connection);
                         continue;
                     }
-                } else if (ClientGlobal.getG_connection_pool_max_count_per_entry() == 0 || totalCount.get() < ClientGlobal.getG_connection_pool_max_count_per_entry()) {
+                } else if (ClientGlobal.g_connection_pool_max_count_per_entry == 0 || totalCount.get() < ClientGlobal.g_connection_pool_max_count_per_entry) {
                     connection = ConnectionFactory.create(this.inetSocketAddress);
                     totalCount.incrementAndGet();
                 } else {
                     try {
-                        if (condition.await(ClientGlobal.getG_connection_pool_max_wait_time_in_ms(), TimeUnit.MILLISECONDS)) {
+                        if (condition.await(ClientGlobal.g_connection_pool_max_wait_time_in_ms, TimeUnit.MILLISECONDS)) {
                             //wait single success
                             continue;
                         }
-                        throw new MyException("connect to server " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + " fail, wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
+                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("connect to server " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + " fail, emsg:" + e.getMessage());
+                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, emsg:" + e.getMessage());
                     }
                 }
                 return connection;
@@ -110,7 +110,7 @@ public class ConnectionManager {
     @Override
     public String toString() {
         return "ConnectionManager{" +
-                "ip:port='" + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() +
+                "ip:port='" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() +
                 ", totalCount=" + totalCount +
                 ", freeCount=" + freeCount +
                 ", freeConnections =" + freeConnections +

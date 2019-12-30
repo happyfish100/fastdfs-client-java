@@ -331,18 +331,6 @@ public class ClientGlobal {
     return g_connection_pool_enabled;
   }
 
-  public static int getG_connection_pool_max_count_per_entry() {
-    return g_connection_pool_max_count_per_entry;
-  }
-
-  public static int getG_connection_pool_max_idle_time() {
-    return g_connection_pool_max_idle_time;
-  }
-
-  public static int getG_connection_pool_max_wait_time_in_ms() {
-    return g_connection_pool_max_wait_time_in_ms;
-  }
-
   public static String configInfo() {
     String trackerServers = "";
     if (g_tracker_group != null) {
