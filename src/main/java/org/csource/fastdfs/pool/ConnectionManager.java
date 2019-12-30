@@ -36,7 +36,7 @@ public class ConnectionManager {
     /**
      * free connections
      */
-    private volatile ConcurrentLinkedQueue<Connection> freeConnections = new ConcurrentLinkedQueue<Connection>();
+    private volatile LinkedList<Connection> freeConnections = new LinkedList<Connection>();
 
     private ConnectionManager() {
 
