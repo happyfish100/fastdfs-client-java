@@ -13,17 +13,20 @@ public class ConnectionPool {
      */
     private final static ConcurrentHashMap<String, ConnectionManager> CP = new ConcurrentHashMap<String, ConnectionManager>();
 
-    public static Connection getConnection(InetSocketAddress socketAddress) throws MyException, IOException {
+    public static Connection getConnection(InetSocketAddress socketAddress) throws MyException {
         if (socketAddress == null) {
             return null;
         }
         String key = getKey(socketAddress);
         ConnectionManager connectionManager;
-        synchronized (ConnectionPool.class) {
-            connectionManager = CP.get(key);
-            if (connectionManager == null) {
-                connectionManager = new ConnectionManager(socketAddress);
-                CP.put(key, connectionManager);
+        connectionManager = CP.get(key);
+        if (connectionManager == null) {
+            synchronized (ConnectionPool.class) {
+                connectionManager = CP.get(key);
+                if (connectionManager == null) {
+                    connectionManager = new ConnectionManager(socketAddress);
+                    CP.put(key, connectionManager);
+                }
             }
         }
         return connectionManager.getConnection();
@@ -60,7 +63,7 @@ public class ConnectionPool {
         if (socketAddress == null) {
             return null;
         }
-        return String.format("%s:%s", socketAddress.getHostName(), socketAddress.getPort());
+        return String.format("%s:%s", socketAddress.getHostName().trim(), socketAddress.getPort());
     }
 
     @Override

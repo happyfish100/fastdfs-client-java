@@ -5,6 +5,7 @@ import org.csource.fastdfs.ClientGlobal;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,7 +46,7 @@ public class ConnectionManager {
         this.inetSocketAddress = socketAddress;
     }
 
-    public Connection getConnection() throws MyException, IOException {
+    public Connection getConnection() throws MyException {
         lock.lock();
         try {
             Connection connection = null;
@@ -76,9 +77,6 @@ public class ConnectionManager {
                 }
                 return connection;
             }
-        } catch (IOException e) {
-            System.err.println("get connection ERROR , emsg:" + e.getMessage());
-            throw e;
         } finally {
             lock.unlock();
         }
@@ -100,7 +98,7 @@ public class ConnectionManager {
 
     }
 
-    public void closeConnection(Connection connection) throws IOException {
+    public void closeConnection(Connection connection) {
         try {
             if (connection != null) {
                 totalCount.decrementAndGet();
@@ -109,7 +107,6 @@ public class ConnectionManager {
         } catch (IOException e) {
             System.err.println("close socket error , msg:" + e.getMessage());
             e.printStackTrace();
-            throw e;
         }
     }
 
