@@ -60,9 +60,7 @@ public class ConnectionManager {
                     }
                 } else if (ClientGlobal.getG_connection_pool_max_count_per_entry() == 0 || totalCount.get() < ClientGlobal.getG_connection_pool_max_count_per_entry()) {
                     connection = ConnectionFactory.create(this.inetSocketAddress);
-                    if (connection != null) {
-                        totalCount.incrementAndGet();
-                    }
+                    totalCount.incrementAndGet();
                 } else {
                     try {
                         if (condition.await(ClientGlobal.getG_connection_pool_max_wait_time_in_ms(), TimeUnit.MILLISECONDS)) {
