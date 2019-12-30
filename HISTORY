@@ -1,4 +1,9 @@
 
+Version 1.28  2019-12-30
+  * support connection pool. you can use connection pool or a short connection.
+    configuration items please see fdfs_client.conf and client.properties
+  * you must upgrade your FastDFS server to V6.06 or higher version
+
 Version 1.27  2019-11-11
   * StorageClient add function: regenerate_filename for appender file
     StorageClient1 add function: regenerate_filename1 for appender file
