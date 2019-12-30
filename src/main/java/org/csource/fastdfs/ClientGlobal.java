@@ -56,7 +56,7 @@ public class ClientGlobal {
   public static final String DEFAULT_HTTP_SECRET_KEY = "FastDFS1234567890";
   public static final int DEFAULT_HTTP_TRACKER_HTTP_PORT = 80;
 
-  public static final boolean DEFAULT_CONNECTION_POOL_ENABLED = false;
+  public static final boolean DEFAULT_CONNECTION_POOL_ENABLED = true;
   public static final int DEFAULT_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = 100;
   public static final int DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME = 3600 ;//second
   public static final int DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = 1000 ;//millisecond
@@ -349,8 +349,8 @@ public class ClientGlobal {
       + "\n  g_tracker_http_port = " + g_tracker_http_port
       + "\n  g_connection_pool_enabled = " + g_connection_pool_enabled
       + "\n  g_connection_pool_max_count_per_entry = " + g_connection_pool_max_count_per_entry
-      + "\n  g_connection_pool_max_idle_time = " + g_connection_pool_max_idle_time
-      + "\n  g_connection_pool_max_wait_time_in_ms = " + g_connection_pool_max_wait_time_in_ms
+      + "\n  g_connection_pool_max_idle_time(ms) = " + g_connection_pool_max_idle_time
+      + "\n  g_connection_pool_max_wait_time_in_ms(ms) = " + g_connection_pool_max_wait_time_in_ms
       + "\n  trackerServers = " + trackerServers
       + "\n}";
   }
