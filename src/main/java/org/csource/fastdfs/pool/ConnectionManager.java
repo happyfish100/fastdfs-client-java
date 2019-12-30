@@ -6,7 +6,6 @@ import org.csource.fastdfs.ClientGlobal;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
@@ -36,7 +35,7 @@ public class ConnectionManager {
     /**
      * free connections
      */
-    private volatile LinkedList<Connection> freeConnections = new LinkedList<Connection>();
+    private  LinkedList<Connection> freeConnections = new LinkedList<Connection>();
 
     private ConnectionManager() {
 
@@ -67,10 +66,10 @@ public class ConnectionManager {
                             //wait single success
                             continue;
                         }
-                        throw new MyException("get connection fail,  wait_time greater than " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
+                        throw new MyException("get connection fail,ip:port = " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + " ,wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("get connection fail, emsg:" + e.getMessage());
+                        throw new MyException("get connection fail, ip:port = " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + ", emsg:" + e.getMessage());
                     }
                 }
                 return connection;
@@ -103,7 +102,7 @@ public class ConnectionManager {
                 connection.closeDirectly();
             }
         } catch (IOException e) {
-            System.err.println("close socket error , msg:" + e.getMessage());
+            System.err.println("close socket error,ip:port = " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + ",emsg:" + e.getMessage());
             e.printStackTrace();
         }
     }
