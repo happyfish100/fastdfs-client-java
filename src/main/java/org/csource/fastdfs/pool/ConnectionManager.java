@@ -35,7 +35,7 @@ public class ConnectionManager {
     /**
      * free connections
      */
-    private  LinkedList<Connection> freeConnections = new LinkedList<Connection>();
+    private LinkedList<Connection> freeConnections = new LinkedList<Connection>();
 
     private ConnectionManager() {
 
