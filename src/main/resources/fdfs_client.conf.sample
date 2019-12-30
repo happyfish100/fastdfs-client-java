@@ -8,7 +8,7 @@ http.secret_key = FastDFS1234567890
 tracker_server = 10.0.11.243:22122
 tracker_server = 10.0.11.244:22122
 
-connection_pool.enabled = false
-connection_pool.max_count_per_entry = 100
-connection_pool.max_idle_time = 60
-connection_pool.max_wait_time_in_ms = 5000
+connection_pool.enabled = true
+connection_pool.max_count_per_entry = 500
+connection_pool.max_idle_time = 3600
+connection_pool.max_wait_time_in_ms = 1000

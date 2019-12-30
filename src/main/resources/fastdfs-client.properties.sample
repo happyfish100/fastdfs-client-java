@@ -12,13 +12,13 @@ fastdfs.http_tracker_http_port = 80
 fastdfs.tracker_servers = 185.245.40.70:22122
 
 ## Whether to open the connection pool, if not, create a new connection every time
-fastdfs.connection_pool.enabled = false
+fastdfs.connection_pool.enabled = true
 
 ## max_count_per_entry: max connection count per host:port , 0 is not limit
-fastdfs.connection_pool.max_count_per_entry = 100
+fastdfs.connection_pool.max_count_per_entry = 500
 
-## connections whose the idle time exceeds this time will be closed, unit: second,default value is 60
-fastdfs.connection_pool.max_idle_time = 60
+## connections whose the idle time exceeds this time will be closed, unit: second, default value is 3600
+fastdfs.connection_pool.max_idle_time = 3600
 
-## Maximum waiting time when the maximum number of connections is reached, unit: Millisecond, default value is 5000
-fastdfs.connection_pool.max_wait_time_in_ms = 5000
+## Maximum waiting time when the maximum number of connections is reached, unit: millisecond, default value is 1000
+fastdfs.connection_pool.max_wait_time_in_ms = 1000
