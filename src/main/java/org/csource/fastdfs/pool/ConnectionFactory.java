@@ -23,7 +23,7 @@ public class ConnectionFactory {
             sock.connect(socketAddress, ClientGlobal.g_connect_timeout);
             return new Connection(sock, socketAddress);
         } catch (Exception e) {
-            throw new MyException("get connection error, ip:host = " + socketAddress.getHostName() + ":" + socketAddress.getPort() + ", emsg:" + e.getMessage());
+            throw new MyException("connect to server, " + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + " fail, emsg:" + e.getMessage());
         }
     }
 }

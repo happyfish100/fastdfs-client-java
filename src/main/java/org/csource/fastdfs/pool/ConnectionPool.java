@@ -63,7 +63,7 @@ public class ConnectionPool {
         if (socketAddress == null) {
             return null;
         }
-        return String.format("%s:%s", socketAddress.getHostName(), socketAddress.getPort());
+        return String.format("%s:%s", socketAddress.getAddress().getHostAddress(), socketAddress.getPort());
     }
 
     @Override

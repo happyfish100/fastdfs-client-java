@@ -66,10 +66,10 @@ public class ConnectionManager {
                             //wait single success
                             continue;
                         }
-                        throw new MyException("get connection fail,ip:port = " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + " ,wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
+                        throw new MyException("connect to server " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + " fail, wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("get connection fail, ip:port = " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + ", emsg:" + e.getMessage());
+                        throw new MyException("connect to server " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + " fail, emsg:" + e.getMessage());
                     }
                 }
                 return connection;
@@ -102,7 +102,7 @@ public class ConnectionManager {
                 connection.closeDirectly();
             }
         } catch (IOException e) {
-            System.err.println("close socket error,ip:port = " + inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort() + ",emsg:" + e.getMessage());
+            System.err.println("close socket[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] error ,emsg:" + e.getMessage());
             e.printStackTrace();
         }
     }
