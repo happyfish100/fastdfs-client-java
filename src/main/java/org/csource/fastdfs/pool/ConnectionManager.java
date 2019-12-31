@@ -66,6 +66,7 @@ public class ConnectionManager {
                             isActive = false;
                         }
                         if (!isActive) {
+                            closeConnection(connection);
                             continue;
                         } else {
                             connection.setNeedActiveTest(false);
