@@ -57,6 +57,16 @@ public class ConnectionManager {
                         closeConnection(connection);
                         continue;
                     }
+                    if (connection.isNeedActiveTest()) {
+                        boolean isActive = false;
+                        try {
+                            isActive = connection.activeTest();
+                        } catch (IOException e) {
+                            System.err.println("send to server[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] active test error ,emsg:" + e.getMessage());
+                            isActive = false;
+                        }
+                        if (!isActive) continue;
+                    }
                 } else if (ClientGlobal.g_connection_pool_max_count_per_entry == 0 || totalCount.get() < ClientGlobal.g_connection_pool_max_count_per_entry) {
                     connection = ConnectionFactory.create(this.inetSocketAddress);
                     totalCount.incrementAndGet();
@@ -106,6 +116,20 @@ public class ConnectionManager {
             e.printStackTrace();
         }
     }
+
+    public void setActiveTestFlag() {
+        if (freeCount.get() > 0) {
+            lock.lock();
+            try {
+                for (Connection freeConnection : freeConnections) {
+                    freeConnection.setNeedActiveTest(true);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
 
     @Override
     public String toString() {

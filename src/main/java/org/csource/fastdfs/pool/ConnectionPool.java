@@ -54,6 +54,7 @@ public class ConnectionPool {
         ConnectionManager connectionManager = CP.get(key);
         if (connectionManager != null) {
             connectionManager.closeConnection(connection);
+            connectionManager.setActiveTestFlag();
         } else {
             connection.closeDirectly();
         }
