@@ -65,7 +65,11 @@ public class ConnectionManager {
                             System.err.println("send to server[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] active test error ,emsg:" + e.getMessage());
                             isActive = false;
                         }
-                        if (!isActive) continue;
+                        if (!isActive) {
+                            continue;
+                        } else {
+                            connection.setNeedActiveTest(false);
+                        }
                     }
                 } else if (ClientGlobal.g_connection_pool_max_count_per_entry == 0 || totalCount.get() < ClientGlobal.g_connection_pool_max_count_per_entry) {
                     connection = ConnectionFactory.create(this.inetSocketAddress);
