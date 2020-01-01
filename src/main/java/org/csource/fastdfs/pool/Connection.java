@@ -15,6 +15,8 @@ public class Connection {
     private InetSocketAddress inetSockAddr;
     private Long lastAccessTime = System.currentTimeMillis();
 
+    private boolean needActiveTest = false;
+
     public Connection(Socket sock, InetSocketAddress inetSockAddr) {
         this.sock = sock;
         this.inetSockAddr = inetSockAddr;
@@ -117,11 +119,21 @@ public class Connection {
         return false;
     }
 
+    public boolean isNeedActiveTest() {
+        return needActiveTest;
+    }
+
+    public void setNeedActiveTest(boolean needActiveTest) {
+        this.needActiveTest = needActiveTest;
+    }
+
     @Override
     public String toString() {
-        return "TrackerServer{" +
+        return "Connection{" +
                 "sock=" + sock +
                 ", inetSockAddr=" + inetSockAddr +
+                ", lastAccessTime=" + lastAccessTime +
+                ", needActiveTest=" + needActiveTest +
                 '}';
     }
 }
