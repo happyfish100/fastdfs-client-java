@@ -1,4 +1,10 @@
 
+Version 1.29  2020-01-03
+  * support active test for connection pool.
+    when the tracker / storage server restarts or the network burst failure
+    occurs, only one request will be sacrificed (failed), the rest of
+    the connections in the pool will be enabled to active test for validation.
+
 Version 1.28  2019-12-30
   * support connection pool. you can use connection pool or a short connection.
     configuration items please see fdfs_client.conf and client.properties
