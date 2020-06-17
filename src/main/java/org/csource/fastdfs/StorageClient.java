@@ -719,6 +719,7 @@ public class StorageClient {
         boolean bUploadSlave;
         int offset;
         long body_len;
+        String[] results = null;
 
         bUploadSlave = ((group_name != null && group_name.length() > 0) &&
                 (master_filename != null && master_filename.length() > 0) &&
@@ -814,29 +815,13 @@ public class StorageClient {
 
             new_group_name = new String(pkgInfo.body, 0, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN).trim();
             remote_filename = new String(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN, pkgInfo.body.length - ProtoCommon.FDFS_GROUP_NAME_MAX_LEN);
-            String[] results = new String[2];
+            results = new String[2];
             results[0] = new_group_name;
             results[1] = remote_filename;
 
             if (meta_list == null || meta_list.length == 0) {
                 return results;
             }
-
-            int result = 0;
-            try {
-                result = this.set_metadata(new_group_name, remote_filename,
-                        meta_list, ProtoCommon.STORAGE_SET_METADATA_FLAG_OVERWRITE);
-            } catch (IOException ex) {
-                result = 5;
-                throw ex;
-            } finally {
-                if (result != 0) {
-                    this.errno = (byte) result;
-                    this.delete_file(new_group_name, remote_filename);
-                    return null;
-                }
-            }
-            return results;
         } catch (IOException ex) {
             try {
                 connection.close();
@@ -850,6 +835,20 @@ public class StorageClient {
             releaseConnection(connection, bNewStorageServer);
 
         }
+
+        int result = 0;
+        try {
+            result = this.set_metadata(new_group_name, remote_filename,
+                    meta_list, ProtoCommon.STORAGE_SET_METADATA_FLAG_OVERWRITE);
+        } catch (IOException ex) {
+            result = 5;
+        } finally {
+            if (result != 0) {
+                this.errno = (byte) result;
+                this.delete_file(new_group_name, remote_filename);
+            }
+        }
+        return result == 0 ? results : null;
     }
 
     /**
