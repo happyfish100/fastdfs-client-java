@@ -87,7 +87,7 @@ public class TrackerGroup {
       }
     }
 
-    return null;
+    throw new IOException("can not found available server, please check: " + tracker_servers);
   }
 
   public Object clone() {
