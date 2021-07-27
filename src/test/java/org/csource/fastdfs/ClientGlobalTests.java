@@ -21,6 +21,9 @@ public class ClientGlobalTests {
     ClientGlobal.initByProperties(props);
     System.out.println("ClientGlobal.configInfo(): " + ClientGlobal.configInfo());
 
+    String trackerServer = "www.baidu.com:22122";
+    ClientGlobal.initByTrackers(trackerServer);
+    System.out.println("Host >>> ClientGlobal.configInfo() : " + ClientGlobal.configInfo());
   }
 
 }
