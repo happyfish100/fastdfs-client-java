@@ -1,0 +1,47 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>ossrh</id>
+      <!-- TODO 在 sonatype 注册的帐号 -->
+      <username>${env.SERVER_OSSRH_USERNAME}</username>
+      <password>${env.SERVER_OSSRH_PASSWORD}</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>central</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>https://repo1.maven.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <url>https://repo1.maven.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+    <profile>
+      <id>ossrh</id>
+      <properties>
+        <gpg.executable>gpg</gpg.executable>
+        <gpg.useagent>true</gpg.useagent>
+        <!-- <gpg.passphrase>${env.GPG_PASSWORD}</gpg.passphrase> -->
+      </properties>
+    </profile>
+  </profiles>
+</settings>
