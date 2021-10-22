@@ -9,8 +9,7 @@
   -->
   <groupId>io.github.rui8832</groupId>
   <artifactId>fastdfs-client-java</artifactId>
-  <!-- <version>1.29-SNAPSHOT</version> -->
-  <version>1.29-20211022</version>
+  <version>1.29-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>fastdfs-client-java</name>
   <description>fastdfs client for java</description>
