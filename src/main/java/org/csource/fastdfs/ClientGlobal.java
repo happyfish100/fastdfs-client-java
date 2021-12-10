@@ -337,7 +337,8 @@ public class ClientGlobal {
       InetSocketAddress[] trackerAddresses = g_tracker_group.tracker_servers;
       for (InetSocketAddress inetSocketAddress : trackerAddresses) {
         if(trackerServers.length() > 0) trackerServers += ",";
-        trackerServers += inetSocketAddress.toString().substring(1);
+        String address = inetSocketAddress.toString();
+        trackerServers += address.startsWith("/") ? address.substring(1) : address;
       }
     }
     return "{"
