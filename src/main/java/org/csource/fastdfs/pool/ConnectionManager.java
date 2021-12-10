@@ -45,7 +45,7 @@ public class ConnectionManager {
         this.inetSocketAddress = socketAddress;
     }
 
-    public Connection getConnection() throws MyException {
+    public Connection getConnection() throws IOException {
         lock.lock();
         try {
             Connection connection = null;
@@ -81,10 +81,10 @@ public class ConnectionManager {
                             //wait single success
                             continue;
                         }
-                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
+                        throw new IOException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, emsg:" + e.getMessage());
+                        throw new IOException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, emsg:" + e.getMessage());
                     }
                 }
                 return connection;

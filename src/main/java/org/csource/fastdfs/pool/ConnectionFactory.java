@@ -15,7 +15,7 @@ public class ConnectionFactory {
      * @return
      * @throws IOException
      */
-    public static Connection create(InetSocketAddress socketAddress) throws MyException {
+    public static Connection create(InetSocketAddress socketAddress) throws IOException {
         try {
             Socket sock = new Socket();
             sock.setReuseAddress(true);
@@ -23,7 +23,7 @@ public class ConnectionFactory {
             sock.connect(socketAddress, ClientGlobal.g_connect_timeout);
             return new Connection(sock, socketAddress);
         } catch (Exception e) {
-            throw new MyException("connect to server " + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + " fail, emsg:" + e.getMessage());
+            throw new IOException("connect to server " + socketAddress.getAddress().getHostAddress() + ":" + socketAddress.getPort() + " fail, emsg:" + e.getMessage(), e);
         }
     }
 }

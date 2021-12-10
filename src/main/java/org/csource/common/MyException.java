@@ -16,6 +16,7 @@ package org.csource.common;
  */
 public class MyException extends Exception {
   public MyException(String s, Exception e) {
+    super(s,e);
   }
 
   public MyException(String message) {

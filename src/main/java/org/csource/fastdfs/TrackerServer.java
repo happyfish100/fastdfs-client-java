@@ -8,7 +8,6 @@
 
 package org.csource.fastdfs;
 
-import org.csource.common.MyException;
 import org.csource.fastdfs.pool.Connection;
 import org.csource.fastdfs.pool.ConnectionPool;
 import org.csource.fastdfs.pool.ConnectionFactory;
@@ -26,11 +25,12 @@ public class TrackerServer {
     protected InetSocketAddress inetSockAddr;
 
 
-    public TrackerServer(InetSocketAddress inetSockAddr) throws IOException {
+    public TrackerServer(InetSocketAddress inetSockAddr) throws IOException{
         this.inetSockAddr = inetSockAddr;
+        checkServerEnabled();
     }
 
-    public Connection getConnection() throws MyException, IOException {
+    public Connection getConnection() throws IOException {
         Connection connection;
         if (ClientGlobal.g_connection_pool_enabled) {
             connection = ConnectionPool.getConnection(this.inetSockAddr);
@@ -48,4 +48,16 @@ public class TrackerServer {
         return this.inetSockAddr;
     }
 
+    /**
+     * check server enabled
+     * @throws IOException
+     */
+    public void checkServerEnabled() throws IOException {
+        Connection connection = getConnection();
+        try {
+            connection.release();
+        }catch (Exception e){
+            //ignore
+        }
+    }
 }
