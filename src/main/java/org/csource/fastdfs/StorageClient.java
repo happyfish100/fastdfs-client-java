@@ -28,7 +28,6 @@ public class StorageClient {
     public final static Base64 base64 = new Base64('-', '_', '.', 0);
     protected TrackerServer trackerServer;
     protected StorageServer storageServer;
-    protected TrackerClient trackerClient;
     protected byte errno;
 
     /**
