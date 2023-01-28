@@ -96,7 +96,7 @@ public class TrackerClient {
                 throw e;
             }
         }
-        if (connection != null && !failOver) {
+        if (connection != null || !failOver) {
             return connection;
         }
         //do fail over
