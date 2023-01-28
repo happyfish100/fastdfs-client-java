@@ -71,6 +71,45 @@ public class TrackerClient {
         return this.getStoreStorage(trackerServer, groupName);
     }
 
+    public Connection getConnection(TrackerServer trackerServer) throws IOException, MyException {
+        if (ClientGlobal.g_fail_over_retry_count > 0) {
+            int retryCount = 0;
+            do {
+                try {
+                    trackerServer = getTrackerServer();
+                    if (trackerServer == null) {
+                        throw new MyException("tracker server is empty!");
+                    }
+                    return trackerServer.getConnection();
+                } catch (IOException e) {
+                    if (retryCount <= ClientGlobal.g_fail_over_retry_count) {
+                        //allow retry ignore exception
+                        System.err.println("trackerServer get connection error, get connection from next tracker, emsg:" + e.getMessage());
+                    } else {
+                        throw e;
+                    }
+                } catch (MyException e) {
+                    if (retryCount <= ClientGlobal.g_fail_over_retry_count) {
+                        System.err.println("trackerServer get connection error, get connection from next tracker, emsg:" + e.getMessage());
+                        //allow retry ignore exception
+                    } else {
+                        throw e;
+                    }
+                }
+            } while (retryCount++ <= ClientGlobal.g_fail_over_retry_count);
+        } else {
+            if (trackerServer == null) {
+                trackerServer = getTrackerServer();
+                if (trackerServer == null) {
+                    throw new MyException("tracker server is empty!");
+                }
+            }
+            trackerServer.getConnection();
+        }
+        return null;
+    }
+
+
     /**
      * query storage server to upload file
      *
@@ -85,12 +124,7 @@ public class TrackerClient {
         byte cmd;
         int out_len;
         byte store_path;
-        Connection connection;
-
-        if (trackerServer == null) {
-            trackerServer = getTrackerServer();
-        }
-        connection = trackerServer.getConnection();
+        Connection connection = getConnection(trackerServer);
         OutputStream out = connection.getOutputStream();
 
         try {
@@ -170,16 +204,7 @@ public class TrackerClient {
         int port;
         byte cmd;
         int out_len;
-        Connection connection;
-
-        if (trackerServer == null) {
-            trackerServer = getTrackerServer();
-            if (trackerServer == null) {
-                return null;
-            }
-        }
-
-        connection = trackerServer.getConnection();
+        Connection connection = getConnection(trackerServer);
         OutputStream out = connection.getOutputStream();
 
         try {
@@ -343,15 +368,7 @@ public class TrackerClient {
         int len;
         String ip_addr;
         int port;
-        Connection connection;
-
-        if (trackerServer == null) {
-            trackerServer = getTrackerServer();
-            if (trackerServer == null) {
-                return null;
-            }
-        }
-        connection = trackerServer.getConnection();
+        Connection connection = getConnection(trackerServer);
         OutputStream out = connection.getOutputStream();
 
         try {
@@ -473,16 +490,7 @@ public class TrackerClient {
         byte cmd;
         int out_len;
         byte store_path;
-        Connection connection;
-
-        if (trackerServer == null) {
-            trackerServer = getTrackerServer();
-            if (trackerServer == null) {
-                return null;
-            }
-        }
-
-        connection = trackerServer.getConnection();
+        Connection connection = getConnection(trackerServer);
         OutputStream out = connection.getOutputStream();
 
         try {
@@ -548,15 +556,7 @@ public class TrackerClient {
         byte[] bGroupName;
         byte[] bs;
         int len;
-        Connection connection;
-
-        if (trackerServer == null) {
-            trackerServer = getTrackerServer();
-            if (trackerServer == null) {
-                return null;
-            }
-        }
-        connection = trackerServer.getConnection();
+        Connection connection = getConnection(trackerServer);
         OutputStream out = connection.getOutputStream();
 
         try {

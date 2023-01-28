@@ -98,9 +98,9 @@ public class FdfsTest {
     @Test
     public void testUploadDownload() throws Exception {
         NameValuePair[] metaList = new NameValuePair[1];
-        String local_filename = "build.PNG";
+        String local_filename = "commitment.d2f57e10 (2).jpg";
         metaList[0] = new NameValuePair("fileName", local_filename);
-        File file = new File("C:/Users/chengdu/Desktop/build.PNG");
+        File file = new File("/Users/iyw/Downloads/commitment.d2f57e10 (2).jpg");
         InputStream inputStream = new FileInputStream(file);
         int length = inputStream.available();
         byte[] bytes = new byte[length];

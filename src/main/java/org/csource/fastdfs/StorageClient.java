@@ -28,6 +28,7 @@ public class StorageClient {
     public final static Base64 base64 = new Base64('-', '_', '.', 0);
     protected TrackerServer trackerServer;
     protected StorageServer storageServer;
+    protected TrackerClient trackerClient;
     protected byte errno;
 
     /**
@@ -731,7 +732,6 @@ public class StorageClient {
 
         try {
             connection = this.storageServer.getConnection();
-
             ext_name_bs = new byte[ProtoCommon.FDFS_FILE_EXT_NAME_MAX_LEN];
             Arrays.fill(ext_name_bs, (byte) 0);
             if (file_ext_name != null && file_ext_name.length() > 0) {
