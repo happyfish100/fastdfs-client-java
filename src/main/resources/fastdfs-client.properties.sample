@@ -22,6 +22,3 @@ fastdfs.connection_pool.max_idle_time = 3600
 
 ## Maximum waiting time when the maximum number of connections is reached, unit: millisecond, default value is 1000
 fastdfs.connection_pool.max_wait_time_in_ms = 1000
-
-## The missing value is - 1, and the acquisition times are the number of tracker servers minus 1
-fastdfs.fail_over_retry_count = -1

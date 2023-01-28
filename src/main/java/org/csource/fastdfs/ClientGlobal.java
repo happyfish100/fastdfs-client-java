@@ -48,9 +48,6 @@ public class ClientGlobal {
   public static final String PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME = "fastdfs.connection_pool.max_idle_time";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = "fastdfs.connection_pool.max_wait_time_in_ms";
 
-  public static final String PROP_KEY_FAIL_OVER_RETRY_COUNT = "fastdfs.fail_over_retry_count";
-
-
   public static final int DEFAULT_CONNECT_TIMEOUT = 5; //second
   public static final int DEFAULT_NETWORK_TIMEOUT = 30; //second
   public static final String DEFAULT_CHARSET = "UTF-8";
@@ -62,8 +59,6 @@ public class ClientGlobal {
   public static final int DEFAULT_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = 100;
   public static final int DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME = 3600 ;//second
   public static final int DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = 1000 ;//millisecond
-
-  public static final int DEFAULT_FAIL_OVER_RETRY_COUNT = -1;
 
   public static int g_connect_timeout = DEFAULT_CONNECT_TIMEOUT * 1000; //millisecond
   public static int g_network_timeout = DEFAULT_NETWORK_TIMEOUT * 1000; //millisecond
@@ -145,13 +140,6 @@ public class ClientGlobal {
     if (g_connection_pool_max_wait_time_in_ms < 0) {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
     }
-    g_fail_over_retry_count = iniReader.getIntValue("fail_over_retry_count",  DEFAULT_FAIL_OVER_RETRY_COUNT);
-    if (g_fail_over_retry_count == DEFAULT_FAIL_OVER_RETRY_COUNT) {
-      //缺省值为tracker server数量 -1
-      if (tracker_servers.length > 1) {
-          g_fail_over_retry_count = tracker_servers.length -1;
-      }
-    }
   }
 
   /**
@@ -193,8 +181,6 @@ public class ClientGlobal {
     String poolMaxCountPerEntry = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY);
     String poolMaxIdleTime  = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME);
     String poolMaxWaitTimeInMS = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS);
-    String failOverRetryCount = props.getProperty(PROP_KEY_FAIL_OVER_RETRY_COUNT);
-
     if (connectTimeoutInSecondsConf != null && connectTimeoutInSecondsConf.trim().length() != 0) {
       g_connect_timeout = Integer.parseInt(connectTimeoutInSecondsConf.trim()) * 1000;
     }
@@ -224,15 +210,6 @@ public class ClientGlobal {
     }
     if (poolMaxWaitTimeInMS != null && poolMaxWaitTimeInMS.trim().length() != 0) {
       g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
-    }
-    if (failOverRetryCount != null && failOverRetryCount.trim().length() != 0) {
-      g_fail_over_retry_count = Integer.parseInt(failOverRetryCount);
-      if(g_fail_over_retry_count == DEFAULT_FAIL_OVER_RETRY_COUNT) {
-       int trackerLength = g_tracker_group.tracker_servers.length;
-       if (trackerLength > 1) {
-           g_fail_over_retry_count = trackerLength - 1;
-       }
-      }
     }
   }
 

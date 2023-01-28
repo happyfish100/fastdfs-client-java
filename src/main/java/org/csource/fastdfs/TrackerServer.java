@@ -25,9 +25,16 @@ import java.net.InetSocketAddress;
 public class TrackerServer {
     protected InetSocketAddress inetSockAddr;
 
+    protected int index;
+
 
     public TrackerServer(InetSocketAddress inetSockAddr) throws IOException {
         this.inetSockAddr = inetSockAddr;
+    }
+
+    public TrackerServer(InetSocketAddress inetSockAddr, int index) {
+        this.inetSockAddr = inetSockAddr;
+        this.index = index;
     }
 
     public Connection getConnection() throws MyException, IOException {
@@ -48,4 +55,11 @@ public class TrackerServer {
         return this.inetSockAddr;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 }

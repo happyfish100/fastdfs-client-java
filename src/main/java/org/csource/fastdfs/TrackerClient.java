@@ -73,7 +73,8 @@ public class TrackerClient {
 
     public Connection getConnection(TrackerServer trackerServer) throws IOException, MyException {
         Connection connection = null;
-        boolean failOver = ClientGlobal.g_fail_over_retry_count > 0 && trackerServer == null;
+        int length = this.tracker_group.tracker_servers.length;
+        boolean failOver = length > 1 && trackerServer == null;
         try {
             if (trackerServer == null) {
                 trackerServer = getTrackerServer();
@@ -84,42 +85,50 @@ public class TrackerClient {
             connection = trackerServer.getConnection();
         } catch (IOException e) {
             if (failOver) {
-                System.err.println("default trackerServer get connection error, emsg:" + e.getMessage());
+                System.err.println("trackerServer get connection error, emsg:" + e.getMessage());
             } else {
                 throw e;
             }
         } catch (MyException e) {
             if (failOver) {
-                System.err.println("default trackerServer get connection error, emsg:" + e.getMessage());
+                System.err.println("trackerServer get connection error, emsg:" + e.getMessage());
             } else {
                 throw e;
             }
         }
-        if (connection != null || !failOver) {
+        if (connection != null && !failOver) {
             return connection;
         }
-        int retryCount = 0;
-        while (retryCount++ <= ClientGlobal.g_fail_over_retry_count) {
-            try {
-                trackerServer = getTrackerServer();
-                if (trackerServer == null) {
-                    throw new MyException("tracker server is empty!");
+        //do fail over
+        if (length > 1) {
+            int currentIndex = trackerServer.getIndex();
+            int failOverCount = 0;
+            while (failOverCount < length - 1) {
+                failOverCount++;
+                currentIndex++;
+                if (currentIndex >= length) {
+                    currentIndex = 0;
                 }
-                return trackerServer.getConnection();
-            } catch (IOException e) {
-                if (retryCount <= ClientGlobal.g_fail_over_retry_count) {
-                    //allow retry ignore exception
-                    System.err.println("retry trackerServer get connection error, get connection from next tracker, retryCount:" + retryCount + ",+ emsg:" + e.getMessage());
-                } else {
-                    throw e;
+                try {
+                    trackerServer = this.tracker_group.getTrackerServer(currentIndex);
+                    if (trackerServer == null) {
+                        throw new MyException("tracker server is empty!");
+                    }
+                    return trackerServer.getConnection();
+                } catch (IOException e) {
+                    System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + "," + e.getMessage());
+                    if (failOverCount == length - 1) {
+                        throw e;
+                    }
+
+                } catch (MyException e) {
+                    System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + ", " + e.getMessage());
+                    if (failOverCount == length - 1) {
+                        throw e;
+                    }
                 }
-            } catch (MyException e) {
-                if (retryCount <= ClientGlobal.g_fail_over_retry_count) {
-                    System.err.println("trackerServer get connection error, get connection from next tracker, retryCount:" + retryCount + ", emsg:" + e.getMessage());
-                    //allow retry ignore exception
-                } else {
-                    throw e;
-                }
+
+
             }
         }
         return null;

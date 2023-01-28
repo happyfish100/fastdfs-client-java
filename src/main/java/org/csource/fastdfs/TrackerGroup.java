@@ -39,7 +39,7 @@ public class TrackerGroup {
      * @return connected tracker server, null for fail
      */
     public TrackerServer getTrackerServer(int serverIndex) throws IOException {
-        return new TrackerServer(this.tracker_servers[serverIndex]);
+        return new TrackerServer(this.tracker_servers[serverIndex], serverIndex);
     }
     /**
      * return connected tracker server
