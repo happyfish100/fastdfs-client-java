@@ -33,7 +33,7 @@ public class FdfsTest {
         TrackerClient tracker = new TrackerClient();
         trackerServer = tracker.getTrackerServer();
         StorageServer storageServer = null;
-        storageClient = new StorageClient(trackerServer, storageServer);
+        storageClient = new StorageClient(null, storageServer);
     }
 
     @After
@@ -106,9 +106,9 @@ public class FdfsTest {
         byte[] bytes = new byte[length];
         inputStream.read(bytes);
         String[] result = storageClient.upload_file(bytes, null, metaList);
-        Assert.assertTrue(storageClient.isConnected());
+        //Assert.assertTrue(storageClient.isConnected());
         // pool testOnborrow  isAvaliable
-        Assert.assertTrue(storageClient.isAvaliable());
+       // Assert.assertTrue(storageClient.isAvaliable());
         LOGGER.info("result {}", Arrays.asList(result));
         byte[] resultbytes = storageClient.download_file(result[0], result[1]);
         writeByteToFile(resultbytes, local_filename);

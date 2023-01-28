@@ -63,7 +63,7 @@ public class ClientGlobal {
   public static final int DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME = 3600 ;//second
   public static final int DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = 1000 ;//millisecond
 
-  public static final int DEFAULT_FAIL_OVER_RETRY_COUNT = 1;
+  public static final int DEFAULT_FAIL_OVER_RETRY_COUNT = -1;
 
   public static int g_connect_timeout = DEFAULT_CONNECT_TIMEOUT * 1000; //millisecond
   public static int g_network_timeout = DEFAULT_NETWORK_TIMEOUT * 1000; //millisecond
@@ -77,7 +77,7 @@ public class ClientGlobal {
   public static int g_connection_pool_max_idle_time = DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME * 1000; //millisecond
   public static int g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS; //millisecond
 
-  public static int g_fail_over_retry_count = DEFAULT_FAIL_OVER_RETRY_COUNT ;//get connection retry count  when fail
+  public static int g_fail_over_retry_count = 0;//get connection retry count  when fail
 
   public static TrackerGroup g_tracker_group;
 
@@ -146,6 +146,12 @@ public class ClientGlobal {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
     }
     g_fail_over_retry_count = iniReader.getIntValue("fail_over_retry_count",  DEFAULT_FAIL_OVER_RETRY_COUNT);
+    if (g_fail_over_retry_count == DEFAULT_FAIL_OVER_RETRY_COUNT) {
+      //缺省值为tracker server数量 -1
+      if (tracker_servers.length > 1) {
+          g_fail_over_retry_count = tracker_servers.length -1;
+      }
+    }
   }
 
   /**
@@ -221,6 +227,12 @@ public class ClientGlobal {
     }
     if (failOverRetryCount != null && failOverRetryCount.trim().length() != 0) {
       g_fail_over_retry_count = Integer.parseInt(failOverRetryCount);
+      if(g_fail_over_retry_count == DEFAULT_FAIL_OVER_RETRY_COUNT) {
+       int trackerLength = g_tracker_group.tracker_servers.length;
+       if (trackerLength > 1) {
+           g_fail_over_retry_count = trackerLength - 1;
+       }
+      }
     }
   }
 

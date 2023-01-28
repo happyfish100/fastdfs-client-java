@@ -13,4 +13,4 @@ connection_pool.max_count_per_entry = 500
 connection_pool.max_idle_time = 3600
 connection_pool.max_wait_time_in_ms = 1000
 
-fail_over_retry_count = 1
+fail_over_retry_count = -1
