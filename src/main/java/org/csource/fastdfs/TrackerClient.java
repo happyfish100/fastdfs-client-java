@@ -100,36 +100,37 @@ public class TrackerClient {
             return connection;
         }
         //do fail over
-        if (length > 1) {
-            int currentIndex = trackerServer.getIndex();
-            int failOverCount = 0;
-            while (failOverCount < length - 1) {
-                failOverCount++;
-                currentIndex++;
-                if (currentIndex >= length) {
-                    currentIndex = 0;
-                }
-                try {
-                    trackerServer = this.tracker_group.getTrackerServer(currentIndex);
-                    if (trackerServer == null) {
-                        throw new MyException("tracker server is empty!");
-                    }
-                    return trackerServer.getConnection();
-                } catch (IOException e) {
-                    System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + "," + e.getMessage());
-                    if (failOverCount == length - 1) {
-                        throw e;
-                    }
-
-                } catch (MyException e) {
-                    System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + ", " + e.getMessage());
-                    if (failOverCount == length - 1) {
-                        throw e;
-                    }
-                }
-
-
+        int currentIndex = 0;
+        if (trackerServer != null) {
+            currentIndex = trackerServer.getIndex();
+        }
+        int failOverCount = 0;
+        while (failOverCount < length - 1) {
+            failOverCount++;
+            currentIndex++;
+            if (currentIndex >= length) {
+                currentIndex = 0;
             }
+            try {
+                trackerServer = this.tracker_group.getTrackerServer(currentIndex);
+                if (trackerServer == null) {
+                    throw new MyException("tracker server is empty!");
+                }
+                return trackerServer.getConnection();
+            } catch (IOException e) {
+                System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + "," + e.getMessage());
+                if (failOverCount == length - 1) {
+                    throw e;
+                }
+
+            } catch (MyException e) {
+                System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + ", " + e.getMessage());
+                if (failOverCount == length - 1) {
+                    throw e;
+                }
+            }
+
+
         }
         return null;
     }

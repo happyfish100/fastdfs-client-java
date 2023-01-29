@@ -33,7 +33,7 @@ public class FdfsTest {
         TrackerClient tracker = new TrackerClient();
         trackerServer = tracker.getTrackerServer();
         StorageServer storageServer = null;
-        storageClient = new StorageClient(null, storageServer);
+        storageClient = new StorageClient(trackerServer, storageServer);
     }
 
     @After
@@ -87,9 +87,9 @@ public class FdfsTest {
 
     @Test
     public void download() throws Exception {
-        String[] uploadresult = {"group1", "M00/00/00/wKgBZV0phl2ASV1nAACk1tFxwrM3814331"};
+        String[] uploadresult = {"group1", "M00/00/00/J2fL12PVypeAWiGcAAM_gDeWVyw5817085"};
         byte[] result = storageClient.download_file(uploadresult[0], uploadresult[1]);
-        String local_filename = "build.PNG";
+        String local_filename = "commitment.d2f57e10.jpg";
         writeByteToFile(result, local_filename);
         File file = new File(local_filename);
         Assert.assertTrue(file.isFile());
