@@ -27,6 +27,7 @@ public class ProtoStructDecoder<T extends StructBase> {
   /**
    * decode byte buffer
    */
+  @SuppressWarnings("unchecked")
   public T[] decode(byte[] bs, Class<T> clazz, int fieldsTotalSize) throws Exception {
     if (bs.length % fieldsTotalSize != 0) {
       throw new IOException("byte array length: " + bs.length + " is invalid!");

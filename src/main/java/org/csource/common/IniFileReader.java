@@ -155,13 +155,13 @@ public class IniFileReader {
     } finally {
       try {
         if (in != null) in.close();
-        //System.out.println("loadFrom...finally...in.close(); done");
       } catch (Exception ex) {
         ex.printStackTrace();
       }
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void readToParamTable(InputStream in) throws IOException {
     this.paramTable = new Hashtable();
     if (in == null) return;
@@ -206,7 +206,6 @@ public class IniFileReader {
       try {
         if (bufferedReader != null) bufferedReader.close();
         if (inReader != null) inReader.close();
-        //System.out.println("readToParamTable...finally...bufferedReader.close();inReader.close(); done");
       } catch (Exception ex) {
         ex.printStackTrace();
       }

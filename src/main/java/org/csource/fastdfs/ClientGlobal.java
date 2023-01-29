@@ -219,7 +219,7 @@ public class ClientGlobal {
    *                       server之间用逗号','分隔
    */
   public static void initByTrackers(String trackerServers) throws IOException, MyException {
-    List<InetSocketAddress> list = new ArrayList();
+    List<InetSocketAddress> list = new ArrayList<InetSocketAddress>();
     String spr1 = ",";
     String spr2 = ":";
     String[] arr1 = trackerServers.trim().split(spr1);
