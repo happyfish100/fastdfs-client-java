@@ -4,7 +4,7 @@
 
   <groupId>org.csource</groupId>
   <artifactId>fastdfs-client-java</artifactId>
-  <version>1.29-SNAPSHOT</version>
+  <version>1.30-SNAPSHOT</version>
   <name>fastdfs-client-java</name>
   <description>fastdfs client for java</description>
   <packaging>jar</packaging>

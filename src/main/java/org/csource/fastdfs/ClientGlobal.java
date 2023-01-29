@@ -72,8 +72,6 @@ public class ClientGlobal {
   public static int g_connection_pool_max_idle_time = DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME * 1000; //millisecond
   public static int g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS; //millisecond
 
-  public static int g_fail_over_retry_count = 0;//get connection retry count  when fail
-
   public static TrackerGroup g_tracker_group;
 
   private ClientGlobal() {
@@ -352,7 +350,6 @@ public class ClientGlobal {
       + "\n  g_connection_pool_max_count_per_entry = " + g_connection_pool_max_count_per_entry
       + "\n  g_connection_pool_max_idle_time(ms) = " + g_connection_pool_max_idle_time
       + "\n  g_connection_pool_max_wait_time_in_ms(ms) = " + g_connection_pool_max_wait_time_in_ms
-      + "\n  g_fail_over_retry_count = " + g_fail_over_retry_count
       + "\n  trackerServers = " + trackerServers
       + "\n}";
   }
