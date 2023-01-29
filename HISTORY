@@ -1,3 +1,8 @@
+Version 1.30  2023-01-29
+  * support tracker server fail over
+    If the tracker server is not specified, when the tracker server fails to
+    get the connection, it will try to get the connection from other tracker servers.
+    The maximum number of attempts is the number of tracker servers minus 1
 
 Version 1.29  2020-01-03
   * support active test for connection pool.
