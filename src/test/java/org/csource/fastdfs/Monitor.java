@@ -106,7 +106,7 @@ public class Monitor {
           System.out.println("\t\tstorage_port = " + storageStat.getStoragePort());
           System.out.println("\t\tstorage_http_port = " + storageStat.getStorageHttpPort());
           System.out.println("\t\tcurrent_write_path = " + storageStat.getCurrentWritePath());
-          System.out.println("\t\tsource ip_addr = " + storageStat.getSrcIpAddr());
+          System.out.println("\t\tsource ip_id = " + storageStat.getSrcId());
           System.out.println("\t\tif_trunk_server = " + storageStat.isTrunkServer());
           System.out.println("\t\tconntion.alloc_count  = " + storageStat.getConnectionAllocCount());
           System.out.println("\t\tconntion.current_count  = " + storageStat.getConnectionCurrentCount());

@@ -21,7 +21,7 @@ public class StructStorageStat extends StructBase {
   protected static final int FIELD_INDEX_ID = 1;
   protected static final int FIELD_INDEX_IP_ADDR = 2;
   protected static final int FIELD_INDEX_DOMAIN_NAME = 3;
-  protected static final int FIELD_INDEX_SRC_IP_ADDR = 4;
+  protected static final int FIELD_INDEX_SRC_ID = 4;
   protected static final int FIELD_INDEX_VERSION = 5;
   protected static final int FIELD_INDEX_JOIN_TIME = 6;
   protected static final int FIELD_INDEX_UP_TIME = 7;
@@ -100,8 +100,8 @@ public class StructStorageStat extends StructBase {
     fieldsArray[FIELD_INDEX_DOMAIN_NAME] = new StructBase.FieldInfo("domainName", offset, ProtoCommon.FDFS_DOMAIN_NAME_MAX_SIZE);
     offset += ProtoCommon.FDFS_DOMAIN_NAME_MAX_SIZE;
 
-    fieldsArray[FIELD_INDEX_SRC_IP_ADDR] = new StructBase.FieldInfo("srcIpAddr", offset, ProtoCommon.FDFS_IPADDR_SIZE);
-    offset += ProtoCommon.FDFS_IPADDR_SIZE;
+    fieldsArray[FIELD_INDEX_SRC_ID] = new StructBase.FieldInfo("srcId", offset, ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE);
+    offset += ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE;
 
     fieldsArray[FIELD_INDEX_VERSION] = new StructBase.FieldInfo("version", offset, ProtoCommon.FDFS_VERSION_SIZE);
     offset += ProtoCommon.FDFS_VERSION_SIZE;
@@ -280,7 +280,7 @@ public class StructStorageStat extends StructBase {
   protected byte status;
   protected String id;
   protected String ipAddr;
-  protected String srcIpAddr;
+  protected String srcId;
   protected String domainName; //http domain name
   protected String version;
   protected long totalMB; //total disk storage in MB
@@ -377,12 +377,12 @@ public class StructStorageStat extends StructBase {
   }
 
   /**
-   * get source storage ip address
+   * get source storage id
    *
-   * @return source storage ip address
+   * @return source storage id
    */
-  public String getSrcIpAddr() {
-    return this.srcIpAddr;
+  public String getSrcId() {
+    return this.srcId;
   }
 
   /**
@@ -917,7 +917,7 @@ public class StructStorageStat extends StructBase {
     this.status = byteValue(bs, offset, fieldsArray[FIELD_INDEX_STATUS]);
     this.id = stringValue(bs, offset, fieldsArray[FIELD_INDEX_ID]);
     this.ipAddr = stringValue(bs, offset, fieldsArray[FIELD_INDEX_IP_ADDR]);
-    this.srcIpAddr = stringValue(bs, offset, fieldsArray[FIELD_INDEX_SRC_IP_ADDR]);
+    this.srcId = stringValue(bs, offset, fieldsArray[FIELD_INDEX_SRC_ID]);
     this.domainName = stringValue(bs, offset, fieldsArray[FIELD_INDEX_DOMAIN_NAME]);
     this.version = stringValue(bs, offset, fieldsArray[FIELD_INDEX_VERSION]);
     this.totalMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_TOTAL_MB]);
