@@ -9,6 +9,13 @@ fastdfs.http_anti_steal_token = false
 fastdfs.http_secret_key = FastDFS1234567890
 fastdfs.http_tracker_http_port = 80
 
+#tracker_server
+#   IPv4:
+#   for example: 192.168.2.100,122.244.141.46:22122
+#
+#   IPv6:
+#    for example: [2409:8a20:42d:2f40:587a:4c47:72c0:ad8e]:22122
+#
 fastdfs.tracker_servers = 185.245.40.70:22122
 
 ## Whether to open the connection pool, if not, create a new connection every time
@@ -22,3 +29,5 @@ fastdfs.connection_pool.max_idle_time = 3600
 
 ## Maximum waiting time when the maximum number of connections is reached, unit: millisecond, default value is 1000
 fastdfs.connection_pool.max_wait_time_in_ms = 1000
+
+server_ipv6.enabled = false

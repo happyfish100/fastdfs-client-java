@@ -13,6 +13,7 @@ import org.csource.common.MyException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class ClientGlobal {
   public static final String PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = "fastdfs.connection_pool.max_count_per_entry";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME = "fastdfs.connection_pool.max_idle_time";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = "fastdfs.connection_pool.max_wait_time_in_ms";
+
+  public static final String PROP_KEY_SERVER_IPV6_ENABLED = "fastdfs.server_ipv6.enabled";
 
   public static final int DEFAULT_CONNECT_TIMEOUT = 5; //second
   public static final int DEFAULT_NETWORK_TIMEOUT = 30; //second
@@ -113,12 +116,19 @@ public class ClientGlobal {
 
     InetSocketAddress[] tracker_servers = new InetSocketAddress[szTrackerServers.length];
     for (int i = 0; i < szTrackerServers.length; i++) {
-      parts = szTrackerServers[i].split("\\:", 2);
+      if(szTrackerServers[i].contains("[")){
+        parts = new String[2];
+        parts[0] = szTrackerServers[i].substring(1, szTrackerServers[i].indexOf("]"));
+        parts[1] = szTrackerServers[i].substring(szTrackerServers[i].lastIndexOf(":") + 1);
+      }else {
+        parts = szTrackerServers[i].split("\\:", 2);
+      }
+
       if (parts.length != 2) {
         throw new MyException("the value of item \"tracker_server\" is invalid, the correct format is host:port");
       }
 
-      tracker_servers[i] = new InetSocketAddress(parts[0].trim(), Integer.parseInt(parts[1].trim()));
+      tracker_servers[i] = new InetSocketAddress(InetAddress.getByName(parts[0].trim()), Integer.parseInt(parts[1].trim()));
     }
     g_tracker_group = new TrackerGroup(tracker_servers);
 
@@ -137,6 +147,9 @@ public class ClientGlobal {
     g_connection_pool_max_wait_time_in_ms = iniReader.getIntValue("connection_pool.max_wait_time_in_ms", DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS);
     if (g_connection_pool_max_wait_time_in_ms < 0) {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
+    }
+    if(iniReader.getBoolValue("server_ipv6.enabled",false)){
+      ProtoCommon.useIPv6();
     }
   }
 
@@ -179,6 +192,7 @@ public class ClientGlobal {
     String poolMaxCountPerEntry = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY);
     String poolMaxIdleTime  = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME);
     String poolMaxWaitTimeInMS = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS);
+    String serverIPv6Enabled = props.getProperty(PROP_KEY_SERVER_IPV6_ENABLED);
     if (connectTimeoutInSecondsConf != null && connectTimeoutInSecondsConf.trim().length() != 0) {
       g_connect_timeout = Integer.parseInt(connectTimeoutInSecondsConf.trim()) * 1000;
     }
@@ -209,6 +223,11 @@ public class ClientGlobal {
     if (poolMaxWaitTimeInMS != null && poolMaxWaitTimeInMS.trim().length() != 0) {
       g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
     }
+    if (serverIPv6Enabled != null && serverIPv6Enabled.trim().length() != 0) {
+      if(Boolean.parseBoolean(poolEnabled)){
+        ProtoCommon.useIPv6();
+      }
+    }
   }
 
   /**
@@ -224,10 +243,16 @@ public class ClientGlobal {
     String spr2 = ":";
     String[] arr1 = trackerServers.trim().split(spr1);
     for (String addrStr : arr1) {
-      String[] arr2 = addrStr.trim().split(spr2);
-      String host = arr2[0].trim();
-      int port = Integer.parseInt(arr2[1].trim());
-      list.add(new InetSocketAddress(host, port));
+      if(addrStr.contains("[")){
+        String host = addrStr.substring(1, addrStr.indexOf("]"));
+        int port = Integer.parseInt(addrStr.substring(addrStr.lastIndexOf(":") + 1));
+        list.add(new InetSocketAddress(InetAddress.getByName(host), port));
+      }else {
+        String[] arr2 = addrStr.trim().split(spr2);
+        String host = arr2[0].trim();
+        int port = Integer.parseInt(arr2[1].trim());
+        list.add(new InetSocketAddress(InetAddress.getByName(host), port));
+      }
     }
     InetSocketAddress[] trackerAddresses = list.toArray(new InetSocketAddress[list.size()]);
     initByTrackers(trackerAddresses);
@@ -247,7 +272,7 @@ public class ClientGlobal {
   public static Socket getSocket(String ip_addr, int port) throws IOException {
     Socket sock = new Socket();
     sock.setSoTimeout(ClientGlobal.g_network_timeout);
-    sock.connect(new InetSocketAddress(ip_addr, port), ClientGlobal.g_connect_timeout);
+    sock.connect(new InetSocketAddress(InetAddress.getByName(ip_addr), port), ClientGlobal.g_connect_timeout);
     return sock;
   }
 
