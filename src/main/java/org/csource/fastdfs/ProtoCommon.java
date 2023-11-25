@@ -72,15 +72,17 @@ public class ProtoCommon {
   public static final int FDFS_PROTO_PKG_LEN_SIZE = 8;
   public static final int FDFS_PROTO_CMD_SIZE = 1;
   public static final int FDFS_GROUP_NAME_MAX_LEN = 16;
-  public static final int FDFS_IPADDR_SIZE = 16;
+  public static final int FDFS_IPADDR_V4_SIZE = 16;
+  public static final int FDFS_IPADDR_V6_SIZE = 46;
+  public static int FDFS_IPADDR_SIZE = FDFS_IPADDR_V4_SIZE;
   public static final int FDFS_DOMAIN_NAME_MAX_SIZE = 128;
   public static final int FDFS_VERSION_SIZE = 6;
   public static final int FDFS_STORAGE_ID_MAX_SIZE = 16;
   public static final String FDFS_RECORD_SEPERATOR = "\u0001";
   public static final String FDFS_FIELD_SEPERATOR = "\u0002";
-  public static final int TRACKER_QUERY_STORAGE_FETCH_BODY_LEN = FDFS_GROUP_NAME_MAX_LEN
+  public static int TRACKER_QUERY_STORAGE_FETCH_BODY_LEN = FDFS_GROUP_NAME_MAX_LEN
     + FDFS_IPADDR_SIZE - 1 + FDFS_PROTO_PKG_LEN_SIZE;
-  public static final int TRACKER_QUERY_STORAGE_STORE_BODY_LEN = FDFS_GROUP_NAME_MAX_LEN
+  public static int TRACKER_QUERY_STORAGE_STORE_BODY_LEN = FDFS_GROUP_NAME_MAX_LEN
     + FDFS_IPADDR_SIZE + FDFS_PROTO_PKG_LEN_SIZE;
   public static final byte FDFS_FILE_EXT_NAME_MAX_LEN = 6;
   public static final byte FDFS_FILE_PREFIX_MAX_LEN = 16;
@@ -501,5 +503,17 @@ public class ProtoCommon {
       this.errno = errno;
       this.body_len = body_len;
     }
+  }
+
+  /**
+   * 设置系统使用IPv6地址进行通信
+   */
+  public static void useIPv6(){
+    FDFS_IPADDR_SIZE = FDFS_IPADDR_V6_SIZE;
+
+    TRACKER_QUERY_STORAGE_FETCH_BODY_LEN = FDFS_GROUP_NAME_MAX_LEN
+            + FDFS_IPADDR_SIZE - 1 + FDFS_PROTO_PKG_LEN_SIZE;
+    TRACKER_QUERY_STORAGE_STORE_BODY_LEN = FDFS_GROUP_NAME_MAX_LEN
+            + FDFS_IPADDR_SIZE + FDFS_PROTO_PKG_LEN_SIZE;
   }
 }

@@ -5,6 +5,13 @@ http.tracker_http_port = 8080
 http.anti_steal_token = no
 http.secret_key = FastDFS1234567890
 
+#tracker_server
+#   IPv4:
+#   for example: 192.168.2.100,122.244.141.46:22122
+#
+#   IPv6:
+#    for example: [2409:8a20:42d:2f40:587a:4c47:72c0:ad8e]:22122
+#
 tracker_server = 10.0.11.243:22122
 tracker_server = 10.0.11.244:22122
 
@@ -12,3 +19,5 @@ connection_pool.enabled = true
 connection_pool.max_count_per_entry = 500
 connection_pool.max_idle_time = 3600
 connection_pool.max_wait_time_in_ms = 1000
+
+server_ipv6.enabled = false
