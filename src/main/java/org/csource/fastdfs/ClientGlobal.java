@@ -49,8 +49,6 @@ public class ClientGlobal {
   public static final String PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME = "fastdfs.connection_pool.max_idle_time";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = "fastdfs.connection_pool.max_wait_time_in_ms";
 
-  public static final String PROP_KEY_SERVER_IPV6_ENABLED = "fastdfs.server_ipv6.enabled";
-
   public static final int DEFAULT_CONNECT_TIMEOUT = 5; //second
   public static final int DEFAULT_NETWORK_TIMEOUT = 30; //second
   public static final String DEFAULT_CHARSET = "UTF-8";
@@ -148,9 +146,6 @@ public class ClientGlobal {
     if (g_connection_pool_max_wait_time_in_ms < 0) {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
     }
-    if(iniReader.getBoolValue("server_ipv6.enabled",false)){
-      ProtoCommon.useIPv6();
-    }
   }
 
   /**
@@ -192,7 +187,6 @@ public class ClientGlobal {
     String poolMaxCountPerEntry = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY);
     String poolMaxIdleTime  = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME);
     String poolMaxWaitTimeInMS = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS);
-    String serverIPv6Enabled = props.getProperty(PROP_KEY_SERVER_IPV6_ENABLED);
     if (connectTimeoutInSecondsConf != null && connectTimeoutInSecondsConf.trim().length() != 0) {
       g_connect_timeout = Integer.parseInt(connectTimeoutInSecondsConf.trim()) * 1000;
     }
@@ -223,11 +217,6 @@ public class ClientGlobal {
     if (poolMaxWaitTimeInMS != null && poolMaxWaitTimeInMS.trim().length() != 0) {
       g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
     }
-    if (serverIPv6Enabled != null && serverIPv6Enabled.trim().length() != 0) {
-      if(Boolean.parseBoolean(poolEnabled)){
-        ProtoCommon.useIPv6();
-      }
-    }
   }
 
   /**
@@ -243,11 +232,11 @@ public class ClientGlobal {
     String spr2 = ":";
     String[] arr1 = trackerServers.trim().split(spr1);
     for (String addrStr : arr1) {
-      if(addrStr.contains("[")){
+      if(addrStr.contains("[")) {
         String host = addrStr.substring(1, addrStr.indexOf("]"));
         int port = Integer.parseInt(addrStr.substring(addrStr.lastIndexOf(":") + 1));
         list.add(new InetSocketAddress(InetAddress.getByName(host), port));
-      }else {
+      } else {
         String[] arr2 = addrStr.trim().split(spr2);
         String host = arr2[0].trim();
         int port = Integer.parseInt(arr2[1].trim());
