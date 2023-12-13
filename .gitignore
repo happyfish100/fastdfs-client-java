@@ -15,3 +15,4 @@ target
 *.conf
 *.PNG
 *.class
+*.swp

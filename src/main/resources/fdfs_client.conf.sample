@@ -15,6 +15,14 @@ http.secret_key = FastDFS1234567890
 tracker_server = 10.0.11.243:22122
 tracker_server = 10.0.11.244:22122
 
+
+# connect which ip address first for multi IPs of a storage server, value list:
+## tracker: connect to the ip address return by tracker server first
+## last-connected: connect to the ip address last connected first
+# default value is tracker
+connect_first_by = tracker
+
+
 connection_pool.enabled = true
 connection_pool.max_count_per_entry = 500
 connection_pool.max_idle_time = 3600

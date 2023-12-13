@@ -735,8 +735,9 @@ public class TrackerClient {
      * @param storageIpAddr the storage server ip address
      * @return true for success, false for fail
      */
-    public boolean deleteStorage(TrackerGroup trackerGroup,
-                                 String groupName, String storageIpAddr) throws IOException, MyException {
+    public boolean deleteStorage(TrackerGroup trackerGroup, String groupName,
+            String storageIpAddr) throws IOException, MyException
+    {
         int serverIndex;
         int notFoundCount;
         TrackerServer trackerServer;
@@ -805,4 +806,78 @@ public class TrackerClient {
 
         return this.errno == 0;
     }
+
+    /**
+     * query storage server to upload file
+     *
+     * @param trackerServer the tracker server
+     * @param groupName     the group name to upload file to, can be empty
+     * @return storage server object, return null if fail
+     */
+    public StringBuilder fetchStorageIds() throws IOException, MyException {
+        byte[] header;
+        int offset = 0;
+        int length;
+        int total_count;
+        int current_count;
+
+        Connection connection = getConnection(null);
+        try {
+            OutputStream out = connection.getOutputStream();
+            StringBuilder builder = new StringBuilder();
+
+            header = ProtoCommon.packHeader(ProtoCommon.TRACKER_PROTO_CMD_FETCH_STORAGE_IDS, 5, (byte)0);
+            byte[] wholePkg = new byte[header.length + 5];
+            System.arraycopy(header, 0, wholePkg, 0, header.length);
+            wholePkg[wholePkg.length - 1] = 1;
+            do {
+                byte[] bs = ProtoCommon.int2buff(offset);
+                System.arraycopy(bs, 0, wholePkg, header.length, bs.length);
+                out.write(wholePkg);
+
+                ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(
+                        connection.getInputStream(),
+                        ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                this.errno = pkgInfo.errno;
+                if (pkgInfo.errno != 0) {
+                    return null;
+                }
+
+                if (pkgInfo.body.length < 8) {
+                    throw new MyException("invalid body length: " + pkgInfo.body.length);
+                }
+
+                total_count = ProtoCommon.buff2int(pkgInfo.body, 0);
+                current_count = ProtoCommon.buff2int(pkgInfo.body, 4);
+                if (current_count < 0) {
+                    throw new MyException("invalid current count: " + current_count);
+                }
+
+                length = pkgInfo.body.length - 8;
+                if (length == 0) {
+                    break;
+                }
+
+                bs = new byte[length];
+                System.arraycopy(pkgInfo.body, 8, bs, 0, length);
+                builder.append(new String(bs, ClientGlobal.g_charset));
+
+                offset += current_count;
+            } while (offset < total_count);
+
+            return builder;
+        } catch (IOException e) {
+            try {
+                connection.close();
+            } finally {
+                connection = null;
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                connection.release();
+            }
+        }
+    }
+
 }

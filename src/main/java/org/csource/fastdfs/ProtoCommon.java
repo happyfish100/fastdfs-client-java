@@ -26,6 +26,7 @@ import java.util.Arrays;
  */
 public class ProtoCommon {
   public static final byte FDFS_PROTO_CMD_QUIT = 82;
+  public static final byte TRACKER_PROTO_CMD_FETCH_STORAGE_IDS = 69;
   public static final byte TRACKER_PROTO_CMD_SERVER_LIST_GROUP = 91;
   public static final byte TRACKER_PROTO_CMD_SERVER_LIST_STORAGE = 92;
   public static final byte TRACKER_PROTO_CMD_SERVER_DELETE_STORAGE = 93;
@@ -311,25 +312,41 @@ public class ProtoCommon {
   }
 
   /**
+   * int convert to buff (big-endian)
+   *
+   * @param n int number
+   * @return 4 bytes buff
+   */
+  public static byte[] int2buff(int n) {
+      byte[] bs;
+
+      bs = new byte[4];
+      bs[0] = (byte) ((n >> 24) & 0xFF);
+      bs[1] = (byte) ((n >> 16) & 0xFF);
+      bs[2] = (byte) ((n >> 8) & 0xFF);
+      bs[3] = (byte) (n & 0xFF);
+      return bs;
+  }
+
+  /**
    * long convert to buff (big-endian)
    *
    * @param n long number
    * @return 8 bytes buff
    */
   public static byte[] long2buff(long n) {
-    byte[] bs;
+      byte[] bs;
 
-    bs = new byte[8];
-    bs[0] = (byte) ((n >> 56) & 0xFF);
-    bs[1] = (byte) ((n >> 48) & 0xFF);
-    bs[2] = (byte) ((n >> 40) & 0xFF);
-    bs[3] = (byte) ((n >> 32) & 0xFF);
-    bs[4] = (byte) ((n >> 24) & 0xFF);
-    bs[5] = (byte) ((n >> 16) & 0xFF);
-    bs[6] = (byte) ((n >> 8) & 0xFF);
-    bs[7] = (byte) (n & 0xFF);
-
-    return bs;
+      bs = new byte[8];
+      bs[0] = (byte) ((n >> 56) & 0xFF);
+      bs[1] = (byte) ((n >> 48) & 0xFF);
+      bs[2] = (byte) ((n >> 40) & 0xFF);
+      bs[3] = (byte) ((n >> 32) & 0xFF);
+      bs[4] = (byte) ((n >> 24) & 0xFF);
+      bs[5] = (byte) ((n >> 16) & 0xFF);
+      bs[6] = (byte) ((n >> 8) & 0xFF);
+      bs[7] = (byte) (n & 0xFF);
+      return bs;
   }
 
   /**

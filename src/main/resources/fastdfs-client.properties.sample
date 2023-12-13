@@ -18,6 +18,14 @@ fastdfs.http_tracker_http_port = 80
 #
 fastdfs.tracker_servers = 185.245.40.70:22122
 
+
+# connect which ip address first for multi IPs of a storage server, value list:
+## tracker: connect to the ip address return by tracker server first
+## last-connected: connect to the ip address last connected first
+# default value is tracker
+fastdfs.connect_first_by = tracker
+
+
 ## Whether to open the connection pool, if not, create a new connection every time
 fastdfs.connection_pool.enabled = true
 

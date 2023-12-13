@@ -847,7 +847,6 @@ public class StorageClient {
             throw ex;
         } finally {
             releaseConnection(connection, bNewStorageServer);
-
         }
     }
 

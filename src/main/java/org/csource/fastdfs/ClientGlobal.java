@@ -42,7 +42,7 @@ public class ClientGlobal {
   public static final String PROP_KEY_HTTP_SECRET_KEY = "fastdfs.http_secret_key";
   public static final String PROP_KEY_HTTP_TRACKER_HTTP_PORT = "fastdfs.http_tracker_http_port";
   public static final String PROP_KEY_TRACKER_SERVERS = "fastdfs.tracker_servers";
-
+  public static final String PROP_KEY_CONNECT_FIRST_BY = "fastdfs.connect_first_by";
 
   public static final String PROP_KEY_CONNECTION_POOL_ENABLED = "fastdfs.connection_pool.enabled";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = "fastdfs.connection_pool.max_count_per_entry";
@@ -56,6 +56,9 @@ public class ClientGlobal {
   public static final String DEFAULT_HTTP_SECRET_KEY = "FastDFS1234567890";
   public static final int DEFAULT_HTTP_TRACKER_HTTP_PORT = 80;
 
+  public static final int CONNECT_FIRST_BY_TRACKER = 0;
+  public static final int CONNECT_FIRST_BY_LAST_CONNECTED = 1;
+
   public static final boolean DEFAULT_CONNECTION_POOL_ENABLED = true;
   public static final int DEFAULT_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = 100;
   public static final int DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME = 3600 ;//second
@@ -67,6 +70,9 @@ public class ClientGlobal {
   public static boolean g_anti_steal_token = DEFAULT_HTTP_ANTI_STEAL_TOKEN; //if anti-steal token
   public static String g_secret_key = DEFAULT_HTTP_SECRET_KEY; //generage token secret key
   public static int g_tracker_http_port = DEFAULT_HTTP_TRACKER_HTTP_PORT;
+  public static int g_connect_first_by = CONNECT_FIRST_BY_TRACKER;
+  public static boolean g_multi_storage_ips = false;
+  public static StorageAddressMap g_storages_address_map;
 
   public static boolean g_connection_pool_enabled = DEFAULT_CONNECTION_POOL_ENABLED;
   public static int g_connection_pool_max_count_per_entry = DEFAULT_CONNECTION_POOL_MAX_COUNT_PER_ENTRY;
@@ -76,6 +82,76 @@ public class ClientGlobal {
   public static TrackerGroup g_tracker_group;
 
   private ClientGlobal() {
+  }
+
+  private static void loadStoragsFromTracker() throws IOException, MyException {
+      TrackerClient tracker = new TrackerClient();
+      StringBuilder builder = tracker.fetchStorageIds();
+      if (builder.length() == 0) {
+          return;
+      }
+
+      System.out.println(builder.toString());
+
+      boolean without_port = true;
+      int count = 0;
+      String[] lines = builder.toString().split("\n");
+      String[] ipAddresses = new String[lines.length];
+      for (String line : lines) {
+          String[] cols = line.split(" ");
+          if (cols.length != 3) {
+              throw new MyException("invalid line: " + line);
+          }
+
+          String ipAddrs = cols[2];
+          if (ipAddrs.indexOf(',') > 0) {
+              ipAddresses[count++] = ipAddrs;
+          }
+      }
+
+      if (count == 0) {
+          return;
+      }
+
+      int startIndex;
+      if (ipAddresses[0].charAt(0) == '[') {  //IPv6
+          if ((startIndex=ipAddresses[0].indexOf(']')) < 0) {
+              throw new MyException("invalid IPv6 address: " + ipAddresses[0]);
+          }
+      } else {
+          startIndex = 0;
+      }
+      if (ipAddresses[0].indexOf(':', startIndex) > 0) {
+          without_port = false;
+      }
+
+      g_multi_storage_ips = true;
+      g_storages_address_map = new StorageAddressMap(without_port);
+      if (without_port) {
+          for (String ipAddr: ipAddresses) {
+              if (ipAddr.charAt(0) == '[') {  //IPv6
+                  ipAddr = ipAddr.substring(1, ipAddr.length() - 1);
+              }
+              String[] cols = ipAddr.split(",");
+              g_storages_address_map.puts(cols[0], cols[1]);
+          }
+      } else {
+          for (String ipPort: ipAddresses) {
+              int colonIndex = ipPort.lastIndexOf(':');
+              if (colonIndex < 0) {
+                  throw new MyException("invalid ip and port: " + ipPort);
+              }
+
+              String ipAddr = ipPort.substring(0, colonIndex);
+              int port = Integer.parseInt(ipPort.substring(colonIndex + 1));
+
+              if (ipAddr.charAt(0) == '[') {  //IPv6
+                  ipAddr = ipAddr.substring(1, ipAddr.length() - 1);
+              }
+              String[] cols = ipAddr.split(",");
+              g_storages_address_map.puts(cols[0], cols[1], port);
+          }
+      }
   }
 
   /**
@@ -114,11 +190,11 @@ public class ClientGlobal {
 
     InetSocketAddress[] tracker_servers = new InetSocketAddress[szTrackerServers.length];
     for (int i = 0; i < szTrackerServers.length; i++) {
-      if(szTrackerServers[i].contains("[")){
+      if (szTrackerServers[i].contains("[")) {
         parts = new String[2];
         parts[0] = szTrackerServers[i].substring(1, szTrackerServers[i].indexOf("]"));
         parts[1] = szTrackerServers[i].substring(szTrackerServers[i].lastIndexOf(":") + 1);
-      }else {
+      } else {
         parts = szTrackerServers[i].split("\\:", 2);
       }
 
@@ -129,6 +205,11 @@ public class ClientGlobal {
       tracker_servers[i] = new InetSocketAddress(InetAddress.getByName(parts[0].trim()), Integer.parseInt(parts[1].trim()));
     }
     g_tracker_group = new TrackerGroup(tracker_servers);
+
+    String connect_first_by = iniReader.getStrValue("connect_first_by");
+    if (connect_first_by != null && connect_first_by.equalsIgnoreCase("last-connected")) {
+        g_connect_first_by = CONNECT_FIRST_BY_LAST_CONNECTED;
+    }
 
     g_tracker_http_port = iniReader.getIntValue("http.tracker_http_port", 80);
     g_anti_steal_token = iniReader.getBoolValue("http.anti_steal_token", false);
@@ -146,6 +227,8 @@ public class ClientGlobal {
     if (g_connection_pool_max_wait_time_in_ms < 0) {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
     }
+
+    loadStoragsFromTracker();
   }
 
   /**
@@ -183,6 +266,8 @@ public class ClientGlobal {
     String httpAntiStealTokenConf = props.getProperty(PROP_KEY_HTTP_ANTI_STEAL_TOKEN);
     String httpSecretKeyConf = props.getProperty(PROP_KEY_HTTP_SECRET_KEY);
     String httpTrackerHttpPortConf = props.getProperty(PROP_KEY_HTTP_TRACKER_HTTP_PORT);
+
+    String connectFirstBy = props.getProperty(PROP_KEY_CONNECT_FIRST_BY);
     String poolEnabled = props.getProperty(PROP_KEY_CONNECTION_POOL_ENABLED);
     String poolMaxCountPerEntry = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY);
     String poolMaxIdleTime  = props.getProperty(PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME);
@@ -205,6 +290,10 @@ public class ClientGlobal {
     if (httpTrackerHttpPortConf != null && httpTrackerHttpPortConf.trim().length() != 0) {
       g_tracker_http_port = Integer.parseInt(httpTrackerHttpPortConf);
     }
+
+    if (connectFirstBy != null && connectFirstBy.equalsIgnoreCase("last-connected")) {
+        g_connect_first_by = CONNECT_FIRST_BY_LAST_CONNECTED;
+    }
     if (poolEnabled != null && poolEnabled.trim().length() != 0) {
       g_connection_pool_enabled = Boolean.parseBoolean(poolEnabled);
     }
@@ -217,6 +306,8 @@ public class ClientGlobal {
     if (poolMaxWaitTimeInMS != null && poolMaxWaitTimeInMS.trim().length() != 0) {
       g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
     }
+
+    loadStoragsFromTracker();
   }
 
   /**
@@ -360,6 +451,8 @@ public class ClientGlobal {
       + "\n  g_anti_steal_token = " + g_anti_steal_token
       + "\n  g_secret_key = " + g_secret_key
       + "\n  g_tracker_http_port = " + g_tracker_http_port
+      + "\n  g_multi_storage_ips = " + g_multi_storage_ips
+      + "\n  g_connect_first_by = " + (g_connect_first_by == CONNECT_FIRST_BY_TRACKER ? "tracker" : "last-connected")
       + "\n  g_connection_pool_enabled = " + g_connection_pool_enabled
       + "\n  g_connection_pool_max_count_per_entry = " + g_connection_pool_max_count_per_entry
       + "\n  g_connection_pool_max_idle_time(ms) = " + g_connection_pool_max_idle_time

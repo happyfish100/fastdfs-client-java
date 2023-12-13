@@ -37,15 +37,20 @@ public class TrackerServer {
         this.index = index;
     }
 
-    public Connection getConnection() throws MyException, IOException {
+    protected Connection getConnection(InetSocketAddress sockAddr) throws MyException, IOException {
         Connection connection;
         if (ClientGlobal.g_connection_pool_enabled) {
-            connection = ConnectionPool.getConnection(this.inetSockAddr);
+            connection = ConnectionPool.getConnection(sockAddr);
         } else {
-            connection = ConnectionFactory.create(this.inetSockAddr);
+            connection = ConnectionFactory.create(sockAddr);
         }
         return connection;
     }
+
+    public Connection getConnection() throws MyException, IOException {
+        return this.getConnection(this.inetSockAddr);
+    }
+
     /**
      * get the server info
      *
