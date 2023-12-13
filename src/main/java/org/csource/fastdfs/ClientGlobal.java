@@ -84,14 +84,12 @@ public class ClientGlobal {
   private ClientGlobal() {
   }
 
-  private static void loadStoragsFromTracker() throws IOException, MyException {
+  private static void loadStorageServersFromTracker() throws IOException, MyException {
       TrackerClient tracker = new TrackerClient();
       StringBuilder builder = tracker.fetchStorageIds();
       if (builder.length() == 0) {
           return;
       }
-
-      System.out.println(builder.toString());
 
       boolean without_port = true;
       int count = 0;
@@ -228,7 +226,7 @@ public class ClientGlobal {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
     }
 
-    loadStoragsFromTracker();
+    loadStorageServersFromTracker();
   }
 
   /**
@@ -307,7 +305,7 @@ public class ClientGlobal {
       g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
     }
 
-    loadStoragsFromTracker();
+    loadStorageServersFromTracker();
   }
 
   /**
