@@ -59,6 +59,11 @@ public class StorageClient1 extends StorageClient {
 
     results[0] = file_id.substring(0, pos); //group name
     results[1] = file_id.substring(pos + 1); //file name
+
+    pos = results[1].indexOf("?");
+    if (pos != -1) {
+      results[1] = results[1].substring(0, pos);
+    }
     return 0;
   }
 
