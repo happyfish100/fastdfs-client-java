@@ -75,7 +75,7 @@ public class ProtoCommon {
   public static final int FDFS_GROUP_NAME_MAX_LEN = 16;
   public static final int FDFS_IPADDR_SIZE = 46;
   public static final int FDFS_DOMAIN_NAME_MAX_SIZE = 128;
-  public static final int FDFS_VERSION_SIZE = 6;
+  public static final int FDFS_VERSION_SIZE = 8;
   public static final int FDFS_STORAGE_ID_MAX_SIZE = 16;
   public static final String FDFS_RECORD_SEPERATOR = "\u0001";
   public static final String FDFS_FIELD_SEPERATOR = "\u0002";

@@ -1,4 +1,8 @@
 
+Version 1.32  2024-02-12
+  * change FDFS_VERSION_SIZE from 6 to 8
+    you must upgrade your FastDFS server to V6.12 or higher version
+
 Version 1.31  2023-12-13
   * adapt to FastDFS server V6.11 for IPv6
     you must upgrade your FastDFS server to V6.11 or higher version
