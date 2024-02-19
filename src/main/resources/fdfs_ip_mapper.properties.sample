@@ -1,0 +1,2 @@
+# Config intranet storage ip to the mapped internet ip and port
+#10.0.11.244=113.204.217.100:22124
