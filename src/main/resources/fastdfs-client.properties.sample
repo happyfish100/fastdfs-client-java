@@ -11,7 +11,7 @@ fastdfs.http_tracker_http_port = 80
 
 #tracker_server
 #   IPv4:
-#   for example: 192.168.2.100,122.244.141.46:22122
+#   for example: 192.168.2.100:22122,122.244.141.46:22122
 #
 #   IPv6:
 #    for example: [2409:8a20:42d:2f40:587a:4c47:72c0:ad8e]:22122
