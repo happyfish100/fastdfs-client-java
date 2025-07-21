@@ -86,9 +86,12 @@ public class ClientGlobal {
 
   private static void loadStorageServersFromTracker() throws IOException, MyException {
       TrackerClient tracker = new TrackerClient();
-      StringBuilder builder = tracker.fetchStorageIds();
-      if (builder.length() == 0) {
-          return;
+      StringBuilder builder = tracker.fetchStorageIds(true);
+      if (builder == null) {
+          builder = tracker.fetchStorageIds(false);
+          if (builder == null || builder.length() == 0) {
+              return;
+          }
       }
 
       boolean without_port = true;

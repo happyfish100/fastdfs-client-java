@@ -1,4 +1,8 @@
 
+Version 1.33  2024-07-21
+  * protocol automatically compatible with IPv4/IPv6 address
+    this version for FastDFS server V6.06 and higher version
+
 Version 1.32  2024-02-12
   * change FDFS_VERSION_SIZE from 6 to 8
     you must upgrade your FastDFS server to V6.12 or higher version

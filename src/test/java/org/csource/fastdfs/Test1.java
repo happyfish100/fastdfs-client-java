@@ -35,7 +35,7 @@ public class Test1 {
             System.out.println("network_timeout=" + ClientGlobal.g_network_timeout + "ms");
             System.out.println("charset=" + ClientGlobal.g_charset);
 
-            TrackerGroup tg = new TrackerGroup(new InetSocketAddress[]{new InetSocketAddress("47.95.221.159", 22122)});
+            TrackerGroup tg = new TrackerGroup(new InetSocketAddress[]{new InetSocketAddress("192.168.3.202", 22122)});
             TrackerClient tc = new TrackerClient(tg);
 
             TrackerServer ts = tc.getTrackerServer();

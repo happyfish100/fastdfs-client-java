@@ -183,18 +183,30 @@ public class TrackerClient {
             }
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP,
-                    ProtoCommon.TRACKER_QUERY_STORAGE_STORE_BODY_LEN);
+                    ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
             }
 
-            ip_addr = new String(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN, ProtoCommon.FDFS_IPADDR_SIZE - 1).trim();
+            if (pkgInfo.body.length < ProtoCommon.TRACKER_QUERY_STORAGE_STORE_IPV4_BODY_LEN) {
+                this.errno = ProtoCommon.ERR_NO_EINVAL;
+                throw new IOException("Invalid body length: " + pkgInfo.body.length);
+            }
 
-            port = (int) ProtoCommon.buff2long(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN
-                    + ProtoCommon.FDFS_IPADDR_SIZE - 1);
-            store_path = pkgInfo.body[ProtoCommon.TRACKER_QUERY_STORAGE_STORE_BODY_LEN - 1];
+            int ip_size;
+            if (pkgInfo.body.length == ProtoCommon.TRACKER_QUERY_STORAGE_STORE_IPV6_BODY_LEN) {
+                ip_size = ProtoCommon.FDFS_IPV6_SIZE;
+            } else if (pkgInfo.body.length == ProtoCommon.TRACKER_QUERY_STORAGE_STORE_IPV4_BODY_LEN) {
+                ip_size = ProtoCommon.FDFS_IPV4_SIZE;
+            } else {
+                this.errno = ProtoCommon.ERR_NO_EINVAL;
+                throw new IOException("Invalid body length: " + pkgInfo.body.length);
+            }
+
+            ip_addr = new String(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN, ip_size - 1).trim();
+            port = (int) ProtoCommon.buff2long(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + ip_size - 1);
+            store_path = pkgInfo.body[pkgInfo.body.length - 1];
 
             return new StorageServer(ip_addr, port, store_path);
         } catch (IOException ex) {
@@ -269,17 +281,26 @@ public class TrackerClient {
                 return null;
             }
 
-            if (pkgInfo.body.length < ProtoCommon.TRACKER_QUERY_STORAGE_STORE_BODY_LEN) {
+            if (pkgInfo.body.length < ProtoCommon.TRACKER_QUERY_STORAGE_STORE_IPV4_BODY_LEN) {
                 this.errno = ProtoCommon.ERR_NO_EINVAL;
-                return null;
+                throw new IOException("Invalid body length: " + pkgInfo.body.length);
             }
 
             int ipPortLen = pkgInfo.body.length - (ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + 1);
-            final int recordLength = ProtoCommon.FDFS_IPADDR_SIZE - 1 + ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
-
-            if (ipPortLen % recordLength != 0) {
-                this.errno = ProtoCommon.ERR_NO_EINVAL;
-                return null;
+            int recordLength = ProtoCommon.FDFS_IPV6_SIZE - 1 + ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
+            int ip_size;
+            if ((pkgInfo.body.length >= ProtoCommon.TRACKER_QUERY_STORAGE_STORE_IPV6_BODY_LEN) &&
+                    ipPortLen % recordLength == 0)
+            {
+                ip_size = ProtoCommon.FDFS_IPV6_SIZE;
+            } else {
+                recordLength = ProtoCommon.FDFS_IPV4_SIZE - 1 + ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
+                if (ipPortLen % recordLength  == 0) {
+                    ip_size = ProtoCommon.FDFS_IPV4_SIZE;
+                } else {
+                    this.errno = ProtoCommon.ERR_NO_EINVAL;
+                    throw new IOException("Invalid body length: " + pkgInfo.body.length);
+                }
             }
 
             int serverCount = ipPortLen / recordLength;
@@ -293,8 +314,8 @@ public class TrackerClient {
             int offset = ProtoCommon.FDFS_GROUP_NAME_MAX_LEN;
 
             for (int i = 0; i < serverCount; i++) {
-                ip_addr = new String(pkgInfo.body, offset, ProtoCommon.FDFS_IPADDR_SIZE - 1).trim();
-                offset += ProtoCommon.FDFS_IPADDR_SIZE - 1;
+                ip_addr = new String(pkgInfo.body, offset, ip_size - 1).trim();
+                offset += ip_size - 1;
 
                 port = (int) ProtoCommon.buff2long(pkgInfo.body, offset);
                 offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
@@ -424,18 +445,33 @@ public class TrackerClient {
                 return null;
             }
 
-            if (pkgInfo.body.length < ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_BODY_LEN) {
+            int server_count = 1;
+            int ip_size;
+            if (pkgInfo.body.length < ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_IPV4_BODY_LEN) {
+                this.errno = ProtoCommon.ERR_NO_EINVAL;
                 throw new IOException("Invalid body length: " + pkgInfo.body.length);
             }
 
-            if ((pkgInfo.body.length - ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_BODY_LEN) % (ProtoCommon.FDFS_IPADDR_SIZE - 1) != 0) {
+            if ((pkgInfo.body.length >= ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_IPV6_BODY_LEN) &&
+                    (pkgInfo.body.length - ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_IPV6_BODY_LEN) %
+                    (ProtoCommon.FDFS_IPV6_SIZE - 1) == 0)
+            {
+                ip_size = ProtoCommon.FDFS_IPV6_SIZE;
+                server_count += (pkgInfo.body.length - ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_IPV6_BODY_LEN) /
+                    (ProtoCommon.FDFS_IPV6_SIZE - 1);
+            } else if ((pkgInfo.body.length - ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_IPV4_BODY_LEN) %
+                    (ProtoCommon.FDFS_IPV4_SIZE - 1) == 0)
+            {
+                ip_size = ProtoCommon.FDFS_IPV4_SIZE;
+                server_count += (pkgInfo.body.length - ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_IPV4_BODY_LEN) /
+                    (ProtoCommon.FDFS_IPV4_SIZE - 1);
+            } else {
+                this.errno = ProtoCommon.ERR_NO_EINVAL;
                 throw new IOException("Invalid body length: " + pkgInfo.body.length);
             }
 
-            int server_count = 1 + (pkgInfo.body.length - ProtoCommon.TRACKER_QUERY_STORAGE_FETCH_BODY_LEN) / (ProtoCommon.FDFS_IPADDR_SIZE - 1);
-
-            ip_addr = new String(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN, ProtoCommon.FDFS_IPADDR_SIZE - 1).trim();
-            int offset = ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + ProtoCommon.FDFS_IPADDR_SIZE - 1;
+            ip_addr = new String(pkgInfo.body, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN, ip_size - 1).trim();
+            int offset = ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + ip_size - 1;
 
             port = (int) ProtoCommon.buff2long(pkgInfo.body, offset);
             offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
@@ -443,8 +479,8 @@ public class TrackerClient {
             ServerInfo[] servers = new ServerInfo[server_count];
             servers[0] = new ServerInfo(ip_addr, port);
             for (int i = 1; i < server_count; i++) {
-                servers[i] = new ServerInfo(new String(pkgInfo.body, offset, ProtoCommon.FDFS_IPADDR_SIZE - 1).trim(), port);
-                offset += ProtoCommon.FDFS_IPADDR_SIZE - 1;
+                servers[i] = new ServerInfo(new String(pkgInfo.body, offset, ip_size - 1).trim(), port);
+                offset += ip_size - 1;
             }
 
             return servers;
@@ -568,6 +604,20 @@ public class TrackerClient {
         return this.listStorages(trackerServer, groupName, storageIpAddr);
     }
 
+    private int getIpaddrLength(String ip, byte[] bIpAddr) {
+        if (bIpAddr.length < ProtoCommon.FDFS_IPV4_SIZE) {
+            return bIpAddr.length;
+        } else if (ip.indexOf(':') >= 0) {  //IPv6 address
+            if (bIpAddr.length < ProtoCommon.FDFS_IPV6_SIZE) {
+                return bIpAddr.length;
+            } else {
+                return ProtoCommon.FDFS_IPV6_SIZE - 1;
+            }
+        } else {  //IPv4 address
+            return ProtoCommon.FDFS_IPV4_SIZE - 1;
+        }
+    }
+
     /**
      * query storage server stat info of the group
      *
@@ -576,8 +626,8 @@ public class TrackerClient {
      * @param storageIpAddr the storage server ip address, can be null or empty
      * @return storage server stat array, return null if fail
      */
-    public StructStorageStat[] listStorages(TrackerServer trackerServer,
-                                            String groupName, String storageIpAddr) throws IOException, MyException {
+    public StructStorageStat[] listStorages(TrackerServer trackerServer, String groupName,
+            String storageIpAddr) throws IOException, MyException {
         byte[] header;
         byte[] bGroupName;
         byte[] bs;
@@ -601,11 +651,7 @@ public class TrackerClient {
             byte[] bIpAddr;
             if (storageIpAddr != null && storageIpAddr.length() > 0) {
                 bIpAddr = storageIpAddr.getBytes(ClientGlobal.g_charset);
-                if (bIpAddr.length < ProtoCommon.FDFS_IPADDR_SIZE) {
-                    ipAddrLen = bIpAddr.length;
-                } else {
-                    ipAddrLen = ProtoCommon.FDFS_IPADDR_SIZE - 1;
-                }
+                ipAddrLen = getIpaddrLength(storageIpAddr, bIpAddr);
             } else {
                 bIpAddr = null;
                 ipAddrLen = 0;
@@ -627,8 +673,15 @@ public class TrackerClient {
                 return null;
             }
 
-            ProtoStructDecoder<StructStorageStat> decoder = new ProtoStructDecoder<StructStorageStat>();
-            return decoder.decode(pkgInfo.body, StructStorageStat.class, StructStorageStat.getFieldsTotalSize());
+            if (pkgInfo.body.length % StructIPv6StorageStat.getFieldsTotalSize() == 0) {
+                ProtoStructDecoder<StructIPv6StorageStat> decoder = new ProtoStructDecoder<StructIPv6StorageStat>();
+                return decoder.decode(pkgInfo.body, StructIPv6StorageStat.class,
+                        StructIPv6StorageStat.getFieldsTotalSize());
+            } else {
+                ProtoStructDecoder<StructIPv4StorageStat> decoder = new ProtoStructDecoder<StructIPv4StorageStat>();
+                return decoder.decode(pkgInfo.body, StructIPv4StorageStat.class,
+                        StructIPv4StorageStat.getFieldsTotalSize());
+            }
         } catch (IOException ex) {
             try {
                 connection.close();
@@ -683,14 +736,8 @@ public class TrackerClient {
             Arrays.fill(bGroupName, (byte) 0);
             System.arraycopy(bs, 0, bGroupName, 0, len);
 
-            int ipAddrLen;
             byte[] bIpAddr = storageIpAddr.getBytes(ClientGlobal.g_charset);
-            if (bIpAddr.length < ProtoCommon.FDFS_IPADDR_SIZE) {
-                ipAddrLen = bIpAddr.length;
-            } else {
-                ipAddrLen = ProtoCommon.FDFS_IPADDR_SIZE - 1;
-            }
-
+            int ipAddrLen = getIpaddrLength(storageIpAddr, bIpAddr);
             header = ProtoCommon.packHeader(ProtoCommon.TRACKER_PROTO_CMD_SERVER_DELETE_STORAGE, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + ipAddrLen, (byte) 0);
             byte[] wholePkg = new byte[header.length + bGroupName.length + ipAddrLen];
             System.arraycopy(header, 0, wholePkg, 0, header.length);
@@ -814,7 +861,7 @@ public class TrackerClient {
      * @param groupName     the group name to upload file to, can be empty
      * @return storage server object, return null if fail
      */
-    public StringBuilder fetchStorageIds() throws IOException, MyException {
+    public StringBuilder fetchStorageIds(boolean haveAllowEmptyField) throws IOException, MyException {
         byte[] header;
         int offset = 0;
         int length;
@@ -823,13 +870,21 @@ public class TrackerClient {
 
         Connection connection = getConnection(null);
         try {
+            int reqBodyLength;
             OutputStream out = connection.getOutputStream();
             StringBuilder builder = new StringBuilder();
 
-            header = ProtoCommon.packHeader(ProtoCommon.TRACKER_PROTO_CMD_FETCH_STORAGE_IDS, 5, (byte)0);
-            byte[] wholePkg = new byte[header.length + 5];
+            if (haveAllowEmptyField) {
+                reqBodyLength = 5;
+            } else {
+                reqBodyLength = 4;
+            }
+            header = ProtoCommon.packHeader(ProtoCommon.TRACKER_PROTO_CMD_FETCH_STORAGE_IDS, reqBodyLength, (byte)0);
+            byte[] wholePkg = new byte[header.length + reqBodyLength];
             System.arraycopy(header, 0, wholePkg, 0, header.length);
-            wholePkg[wholePkg.length - 1] = 1;
+            if (haveAllowEmptyField) {
+                wholePkg[wholePkg.length - 1] = 1;
+            }
             do {
                 byte[] bs = ProtoCommon.int2buff(offset);
                 System.arraycopy(bs, 0, wholePkg, header.length, bs.length);

@@ -14,7 +14,7 @@ import java.util.Date;
  * C struct body decoder
  *
  * @author Happy Fish / YuQing
- * @version Version 1.25
+ * @version Version 1.33
  */
 public class StructStorageStat extends StructBase {
   protected static final int FIELD_INDEX_STATUS = 0;
@@ -82,10 +82,9 @@ public class StructStorageStat extends StructBase {
   protected static final int FIELD_INDEX_LAST_HEART_BEAT_TIME = 60;
   protected static final int FIELD_INDEX_IF_TRUNK_FILE = 61;
 
-  protected static int fieldsTotalSize;
-  protected static StructBase.FieldInfo[] fieldsArray = new StructBase.FieldInfo[62];
+  protected static final int FIELD_COUNT = 62;
 
-  static {
+  protected static int initFieldsArray(StructBase.FieldInfo[] fieldsArray, int ipaddr_size, int version_size) {
     int offset = 0;
 
     fieldsArray[FIELD_INDEX_STATUS] = new StructBase.FieldInfo("status", offset, 1);
@@ -94,8 +93,8 @@ public class StructStorageStat extends StructBase {
     fieldsArray[FIELD_INDEX_ID] = new StructBase.FieldInfo("id", offset, ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE);
     offset += ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE;
 
-    fieldsArray[FIELD_INDEX_IP_ADDR] = new StructBase.FieldInfo("ipAddr", offset, ProtoCommon.FDFS_IPADDR_SIZE);
-    offset += ProtoCommon.FDFS_IPADDR_SIZE;
+    fieldsArray[FIELD_INDEX_IP_ADDR] = new StructBase.FieldInfo("ipAddr", offset, ipaddr_size);
+    offset += ipaddr_size;
 
     fieldsArray[FIELD_INDEX_DOMAIN_NAME] = new StructBase.FieldInfo("domainName", offset, ProtoCommon.FDFS_DOMAIN_NAME_MAX_SIZE);
     offset += ProtoCommon.FDFS_DOMAIN_NAME_MAX_SIZE;
@@ -103,8 +102,8 @@ public class StructStorageStat extends StructBase {
     fieldsArray[FIELD_INDEX_SRC_ID] = new StructBase.FieldInfo("srcId", offset, ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE);
     offset += ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE;
 
-    fieldsArray[FIELD_INDEX_VERSION] = new StructBase.FieldInfo("version", offset, ProtoCommon.FDFS_VERSION_SIZE);
-    offset += ProtoCommon.FDFS_VERSION_SIZE;
+    fieldsArray[FIELD_INDEX_VERSION] = new StructBase.FieldInfo("version", offset, version_size);
+    offset += version_size;
 
     fieldsArray[FIELD_INDEX_JOIN_TIME] = new StructBase.FieldInfo("joinTime", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
@@ -274,7 +273,7 @@ public class StructStorageStat extends StructBase {
     fieldsArray[FIELD_INDEX_IF_TRUNK_FILE] = new StructBase.FieldInfo("ifTrunkServer", offset, 1);
     offset += 1;
 
-    fieldsTotalSize = offset;
+    return offset;
   }
 
   protected byte status;
@@ -339,15 +338,6 @@ public class StructStorageStat extends StructBase {
   protected Date lastSyncedTimestamp;
   protected Date lastHeartBeatTime;
   protected boolean ifTrunkServer;
-
-  /**
-   * get fields total size
-   *
-   * @return fields total size
-   */
-  public static int getFieldsTotalSize() {
-    return fieldsTotalSize;
-  }
 
   /**
    * get storage status
@@ -913,7 +903,7 @@ public class StructStorageStat extends StructBase {
    * @param bs     byte array
    * @param offset start offset
    */
-  public void setFields(byte[] bs, int offset) {
+  protected void setFields(StructBase.FieldInfo[] fieldsArray, byte[] bs, int offset) {
     this.status = byteValue(bs, offset, fieldsArray[FIELD_INDEX_STATUS]);
     this.id = stringValue(bs, offset, fieldsArray[FIELD_INDEX_ID]);
     this.ipAddr = stringValue(bs, offset, fieldsArray[FIELD_INDEX_IP_ADDR]);
@@ -978,5 +968,8 @@ public class StructStorageStat extends StructBase {
     this.lastSyncedTimestamp = dateValue(bs, offset, fieldsArray[FIELD_INDEX_LAST_SYNCED_TIMESTAMP]);
     this.lastHeartBeatTime = dateValue(bs, offset, fieldsArray[FIELD_INDEX_LAST_HEART_BEAT_TIME]);
     this.ifTrunkServer = booleanValue(bs, offset, fieldsArray[FIELD_INDEX_IF_TRUNK_FILE]);
+  }
+
+  public void setFields(byte[] bs, int offset) {
   }
 }

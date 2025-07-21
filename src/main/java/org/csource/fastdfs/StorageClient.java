@@ -1575,19 +1575,28 @@ public class StorageClient {
             out.write(wholePkg);
 
             pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP,
-                    3 * ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE +
-                            ProtoCommon.FDFS_IPADDR_SIZE);
+                    ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
 
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
             }
 
+            int front_len = 3 * ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
+            int ip_size;
+            if (pkgInfo.body.length == front_len + ProtoCommon.FDFS_IPV6_SIZE) { //IPv6
+                ip_size = ProtoCommon.FDFS_IPV6_SIZE;
+            } else if (pkgInfo.body.length == front_len + ProtoCommon.FDFS_IPV4_SIZE) { //IPv4
+                ip_size = ProtoCommon.FDFS_IPV4_SIZE;
+            } else {
+                this.errno = ProtoCommon.ERR_NO_EINVAL;
+                throw new IOException("Invalid body length: " + pkgInfo.body.length);
+            }
+
             long file_size = ProtoCommon.buff2long(pkgInfo.body, 0);
             int create_timestamp = (int) ProtoCommon.buff2long(pkgInfo.body, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
             int crc32 = (int) ProtoCommon.buff2long(pkgInfo.body, 2 * ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
-            String source_ip_addr = (new String(pkgInfo.body, 3 * ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE, ProtoCommon.FDFS_IPADDR_SIZE)).trim();
+            String source_ip_addr = (new String(pkgInfo.body, front_len, ip_size)).trim();
             return new FileInfo(true, FileInfo.FILE_TYPE_NORMAL, file_size,
                     create_timestamp, crc32, source_ip_addr);
         } catch (IOException ex) {
