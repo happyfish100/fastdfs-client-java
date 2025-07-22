@@ -27,3 +27,6 @@ connection_pool.enabled = true
 connection_pool.max_count_per_entry = 500
 connection_pool.max_idle_time = 3600
 connection_pool.max_wait_time_in_ms = 1000
+
+# set to false when FastDFS server version <= V6.10
+fetch_storage_ids.have_allow_empty_field = true

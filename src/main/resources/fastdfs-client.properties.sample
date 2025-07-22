@@ -37,3 +37,6 @@ fastdfs.connection_pool.max_idle_time = 3600
 
 ## Maximum waiting time when the maximum number of connections is reached, unit: millisecond, default value is 1000
 fastdfs.connection_pool.max_wait_time_in_ms = 1000
+
+## set to false when FastDFS server version <= V6.10
+fastdfs.fetch_storage_ids.have_allow_empty_field = true

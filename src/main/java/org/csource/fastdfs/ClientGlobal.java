@@ -24,7 +24,7 @@ import java.util.Properties;
  * Global variables
  *
  * @author Happy Fish / YuQing
- * @version Version 1.11
+ * @version Version 1.33
  */
 public class ClientGlobal {
 
@@ -48,6 +48,8 @@ public class ClientGlobal {
   public static final String PROP_KEY_CONNECTION_POOL_MAX_COUNT_PER_ENTRY = "fastdfs.connection_pool.max_count_per_entry";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_IDLE_TIME = "fastdfs.connection_pool.max_idle_time";
   public static final String PROP_KEY_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS = "fastdfs.connection_pool.max_wait_time_in_ms";
+
+  public static final String PROP_KEY_HAVE_ALLOW_EMPTY_FIELD = "fastdfs.fetch_storage_ids.have_allow_empty_field";
 
   public static final int DEFAULT_CONNECT_TIMEOUT = 5; //second
   public static final int DEFAULT_NETWORK_TIMEOUT = 30; //second
@@ -79,6 +81,9 @@ public class ClientGlobal {
   public static int g_connection_pool_max_idle_time = DEFAULT_CONNECTION_POOL_MAX_IDLE_TIME * 1000; //millisecond
   public static int g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS; //millisecond
 
+  public static final boolean DEFAULT_HAVE_ALLOW_EMPTY_FIELD = true;
+  public static boolean g_have_allow_empty_field = DEFAULT_HAVE_ALLOW_EMPTY_FIELD;
+
   public static TrackerGroup g_tracker_group;
 
   private ClientGlobal() {
@@ -86,12 +91,13 @@ public class ClientGlobal {
 
   private static void loadStorageServersFromTracker() throws IOException, MyException {
       TrackerClient tracker = new TrackerClient();
-      StringBuilder builder = tracker.fetchStorageIds(true);
-      if (builder == null) {
+      StringBuilder builder = tracker.fetchStorageIds(g_have_allow_empty_field);
+      if (builder == null && g_have_allow_empty_field) {
           builder = tracker.fetchStorageIds(false);
-          if (builder == null || builder.length() == 0) {
-              return;
-          }
+      }
+
+      if (builder == null || builder.length() == 0) {
+          return;
       }
 
       boolean without_port = true;
@@ -229,6 +235,7 @@ public class ClientGlobal {
       g_connection_pool_max_wait_time_in_ms = DEFAULT_CONNECTION_POOL_MAX_WAIT_TIME_IN_MS;
     }
 
+    g_have_allow_empty_field = iniReader.getBoolValue("fetch_storage_ids.have_allow_empty_field", DEFAULT_HAVE_ALLOW_EMPTY_FIELD);
     loadStorageServersFromTracker();
   }
 
@@ -306,6 +313,11 @@ public class ClientGlobal {
     }
     if (poolMaxWaitTimeInMS != null && poolMaxWaitTimeInMS.trim().length() != 0) {
       g_connection_pool_max_wait_time_in_ms = Integer.parseInt(poolMaxWaitTimeInMS);
+    }
+
+    String haveAllowEmptyField = props.getProperty(PROP_KEY_HAVE_ALLOW_EMPTY_FIELD);
+    if (haveAllowEmptyField != null && haveAllowEmptyField.trim().length() != 0) {
+      g_have_allow_empty_field = Boolean.parseBoolean(haveAllowEmptyField);
     }
 
     loadStorageServersFromTracker();
@@ -458,6 +470,7 @@ public class ClientGlobal {
       + "\n  g_connection_pool_max_count_per_entry = " + g_connection_pool_max_count_per_entry
       + "\n  g_connection_pool_max_idle_time(ms) = " + g_connection_pool_max_idle_time
       + "\n  g_connection_pool_max_wait_time_in_ms(ms) = " + g_connection_pool_max_wait_time_in_ms
+      + "\n  g_have_allow_empty_field = " + g_have_allow_empty_field
       + "\n  trackerServers = " + trackerServers
       + "\n}";
   }
