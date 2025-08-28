@@ -12,7 +12,7 @@ package org.csource.fastdfs;
  * C struct body decoder
  *
  * @author Happy Fish / YuQing
- * @version Version 1.18
+ * @version Version 1.34
  */
 public class StructGroupStat extends StructBase {
   protected static final int FIELD_INDEX_GROUP_NAME = 0;
@@ -21,8 +21,8 @@ public class StructGroupStat extends StructBase {
   protected static final int FIELD_INDEX_TRUNK_FREE_MB = 3;
   protected static final int FIELD_INDEX_STORAGE_COUNT = 4;
   protected static final int FIELD_INDEX_STORAGE_PORT = 5;
-  protected static final int FIELD_INDEX_STORAGE_HTTP_PORT = 6;
-  protected static final int FIELD_INDEX_ACTIVE_COUNT = 7;
+  protected static final int FIELD_INDEX_READABLE_SERVER_COUNT = 6;
+  protected static final int FIELD_INDEX_WRITABLE_SERVER_COUNT = 7;
   protected static final int FIELD_INDEX_CURRENT_WRITE_SERVER = 8;
   protected static final int FIELD_INDEX_STORE_PATH_COUNT = 9;
   protected static final int FIELD_INDEX_SUBDIR_COUNT_PER_PATH = 10;
@@ -33,40 +33,52 @@ public class StructGroupStat extends StructBase {
 
   static {
     int offset = 0;
-    fieldsArray[FIELD_INDEX_GROUP_NAME] = new StructBase.FieldInfo("groupName", offset, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + 1);
+    fieldsArray[FIELD_INDEX_GROUP_NAME] = new StructBase.FieldInfo(
+            "groupName", offset, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + 1);
     offset += ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + 1;
 
-    fieldsArray[FIELD_INDEX_TOTAL_MB] = new StructBase.FieldInfo("totalMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_TOTAL_MB] = new StructBase.FieldInfo(
+            "totalMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_FREE_MB] = new StructBase.FieldInfo("freeMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_FREE_MB] = new StructBase.FieldInfo(
+            "freeMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_TRUNK_FREE_MB] = new StructBase.FieldInfo("trunkFreeMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_TRUNK_FREE_MB] = new StructBase.FieldInfo(
+            "trunkFreeMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_STORAGE_COUNT] = new StructBase.FieldInfo("storageCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_STORAGE_COUNT] = new StructBase.FieldInfo(
+            "storageCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_STORAGE_PORT] = new StructBase.FieldInfo("storagePort", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_STORAGE_PORT] = new StructBase.FieldInfo(
+            "storagePort", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_STORAGE_HTTP_PORT] = new StructBase.FieldInfo("storageHttpPort", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_READABLE_SERVER_COUNT] = new StructBase.FieldInfo(
+            "readableServerCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_ACTIVE_COUNT] = new StructBase.FieldInfo("activeCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_WRITABLE_SERVER_COUNT] = new StructBase.FieldInfo(
+            "writableServerCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_CURRENT_WRITE_SERVER] = new StructBase.FieldInfo("currentWriteServer", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_CURRENT_WRITE_SERVER] = new StructBase.FieldInfo(
+            "currentWriteServer", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_STORE_PATH_COUNT] = new StructBase.FieldInfo("storePathCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_STORE_PATH_COUNT] = new StructBase.FieldInfo(
+            "storePathCount", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_SUBDIR_COUNT_PER_PATH] = new StructBase.FieldInfo("subdirCountPerPath", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_SUBDIR_COUNT_PER_PATH] = new StructBase.FieldInfo(
+            "subdirCountPerPath", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
-    fieldsArray[FIELD_INDEX_CURRENT_TRUNK_FILE_ID] = new StructBase.FieldInfo("currentTrunkFileId", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    fieldsArray[FIELD_INDEX_CURRENT_TRUNK_FILE_ID] = new StructBase.FieldInfo(
+            "currentTrunkFileId", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
     fieldsTotalSize = offset;
@@ -78,8 +90,8 @@ public class StructGroupStat extends StructBase {
   protected long trunkFreeMB;  //trunk free space in MB
   protected int storageCount;  //storage server count
   protected int storagePort;   //storage server port
-  protected int storageHttpPort; //storage server HTTP port
-  protected int activeCount;     //active storage server count
+  protected int readableServerCount; //readable storage server count
+  protected int writableServerCount; //writable storage server count
   protected int currentWriteServer; //current storage server index to upload file
   protected int storePathCount;     //store base path count of each storage server
   protected int subdirCountPerPath; //sub dir count per store path
@@ -140,12 +152,21 @@ public class StructGroupStat extends StructBase {
   }
 
   /**
+   * get readable storage server count
+   *
+   * @return readable storage server count
+   */
+  public int getReadableServerCount() {
+    return this.readableServerCount;
+  }
+
+  /**
    * get active storage server count in this group
    *
    * @return active storage server count in this group
    */
-  public int getActiveCount() {
-    return this.activeCount;
+  public int getWritableServerCount() {
+    return this.writableServerCount;
   }
 
   /**
@@ -155,15 +176,6 @@ public class StructGroupStat extends StructBase {
    */
   public int getStoragePort() {
     return this.storagePort;
-  }
-
-  /**
-   * get storage server HTTP port
-   *
-   * @return storage server HTTP port
-   */
-  public int getStorageHttpPort() {
-    return this.storageHttpPort;
   }
 
   /**
@@ -215,8 +227,8 @@ public class StructGroupStat extends StructBase {
     this.trunkFreeMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_TRUNK_FREE_MB]);
     this.storageCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORAGE_COUNT]);
     this.storagePort = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORAGE_PORT]);
-    this.storageHttpPort = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORAGE_HTTP_PORT]);
-    this.activeCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_ACTIVE_COUNT]);
+    this.readableServerCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_READABLE_SERVER_COUNT]);
+    this.writableServerCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_WRITABLE_SERVER_COUNT]);
     this.currentWriteServer = intValue(bs, offset, fieldsArray[FIELD_INDEX_CURRENT_WRITE_SERVER]);
     this.storePathCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORE_PATH_COUNT]);
     this.subdirCountPerPath = intValue(bs, offset, fieldsArray[FIELD_INDEX_SUBDIR_COUNT_PER_PATH]);

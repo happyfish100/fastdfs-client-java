@@ -75,7 +75,6 @@ public class ProtoCommon {
   public static final int FDFS_GROUP_NAME_MAX_LEN = 16;
   public static final int FDFS_IPV4_SIZE = 16;
   public static final int FDFS_IPV6_SIZE = 46;
-  public static final int FDFS_DOMAIN_NAME_MAX_SIZE = 128;
   public static final int FDFS_OLD_VERSION_SIZE = 6;
   public static final int FDFS_NEW_VERSION_SIZE = 8;
   public static final int FDFS_STORAGE_ID_MAX_SIZE = 16;
@@ -108,6 +107,12 @@ public class ProtoCommon {
   public static final long TRUNK_LOGIC_FILENAME_LENGTH = NORMAL_LOGIC_FILENAME_LENGTH + FDFS_TRUNK_FILE_INFO_LEN;
   protected static final int PROTO_HEADER_CMD_INDEX = FDFS_PROTO_PKG_LEN_SIZE;
   protected static final int PROTO_HEADER_STATUS_INDEX = FDFS_PROTO_PKG_LEN_SIZE + 1;
+
+  //read write mode
+  public static final byte FDFS_RW_MODE_NONE = 0;
+  public static final byte FDFS_RW_MODE_READONLY = 4;
+  public static final byte FDFS_RW_MODE_WRITEONLY = 2;
+  public static final byte FDFS_RW_MODE_BOTH = FDFS_RW_MODE_READONLY + FDFS_RW_MODE_WRITEONLY;
 
   private ProtoCommon() {
   }

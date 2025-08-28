@@ -14,10 +14,26 @@ import java.text.SimpleDateFormat;
  * load test class
  *
  * @author Happy Fish / YuQing
- * @version Version 1.20
+ * @version Version 1.34
  */
 public class Monitor {
   private Monitor() {
+  }
+
+  public static String getReadWriteModeCaption(byte readWriteMode) {
+
+      switch (readWriteMode) {
+          case ProtoCommon.FDFS_RW_MODE_NONE:
+              return "none (disabled)";
+          case ProtoCommon.FDFS_RW_MODE_READONLY:
+              return "readonly";
+          case ProtoCommon.FDFS_RW_MODE_WRITEONLY:
+              return "writeonly";
+          case ProtoCommon.FDFS_RW_MODE_BOTH:
+              return "both (normal)";
+          default:
+              return "unkown";
+      }
   }
 
   /**
@@ -71,9 +87,9 @@ public class Monitor {
         System.out.println("disk free space = " + groupStat.getFreeMB() + " MB");
         System.out.println("trunk free space = " + groupStat.getTrunkFreeMB() + " MB");
         System.out.println("storage server count = " + groupStat.getStorageCount());
-        System.out.println("active server count = " + groupStat.getActiveCount());
+        System.out.println("readable server count = " + groupStat.getReadableServerCount());
+        System.out.println("writable server count = " + groupStat.getWritableServerCount());
         System.out.println("storage server port = " + groupStat.getStoragePort());
-        System.out.println("storage HTTP port = " + groupStat.getStorageHttpPort());
         System.out.println("store path count = " + groupStat.getStorePathCount());
         System.out.println("subdir count per path = " + groupStat.getSubdirCountPerPath());
         System.out.println("current write server index = " + groupStat.getCurrentWriteServer());
@@ -93,8 +109,9 @@ public class Monitor {
           stroageCount++;
           System.out.println("\tStorage " + stroageCount + ":");
           System.out.println("\t\tstorage id = " + storageStat.getId());
-          System.out.println("\t\tip_addr = " + storageStat.getIpAddr() + "  " + ProtoCommon.getStorageStatusCaption(storageStat.getStatus()));
-          System.out.println("\t\thttp domain = " + storageStat.getDomainName());
+          System.out.println("\t\tip_addr = " + storageStat.getIpAddr() + "  " +
+                  ProtoCommon.getStorageStatusCaption(storageStat.getStatus()));
+          System.out.println("\t\tread write mode = " + getReadWriteModeCaption(storageStat.getReadWriteMode()));
           System.out.println("\t\tversion = " + storageStat.getVersion());
           System.out.println("\t\tjoin time = " + df.format(storageStat.getJoinTime()));
           System.out.println("\t\tup time = " + (storageStat.getUpTime().getTime() == 0 ? "" : df.format(storageStat.getUpTime())));
@@ -104,7 +121,6 @@ public class Monitor {
           System.out.println("\t\tstore_path_count = " + storageStat.getStorePathCount());
           System.out.println("\t\tsubdir_count_per_path = " + storageStat.getSubdirCountPerPath());
           System.out.println("\t\tstorage_port = " + storageStat.getStoragePort());
-          System.out.println("\t\tstorage_http_port = " + storageStat.getStorageHttpPort());
           System.out.println("\t\tcurrent_write_path = " + storageStat.getCurrentWritePath());
           System.out.println("\t\tsource ip_id = " + storageStat.getSrcId());
           System.out.println("\t\tif_trunk_server = " + storageStat.isTrunkServer());
