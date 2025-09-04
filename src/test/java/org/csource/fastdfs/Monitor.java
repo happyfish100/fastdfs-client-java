@@ -80,11 +80,18 @@ public class Monitor {
 
       count = 0;
       for (StructGroupStat groupStat : groupStats) {
+        long available_mb;
+        available_mb = groupStat.getFreeMB() - groupStat.getReservedMB();
+        if (available_mb < 0) {
+            available_mb = 0;
+        }
         count++;
         System.out.println("Group " + count + ":");
         System.out.println("group name = " + groupStat.getGroupName());
         System.out.println("disk total space = " + groupStat.getTotalMB() + "MB");
         System.out.println("disk free space = " + groupStat.getFreeMB() + " MB");
+        System.out.println("disk reserved space = " + groupStat.getReservedMB() + " MB");
+        System.out.println("disk availale space = " + available_mb + " MB");
         System.out.println("trunk free space = " + groupStat.getTrunkFreeMB() + " MB");
         System.out.println("storage server count = " + groupStat.getStorageCount());
         System.out.println("readable server count = " + groupStat.getReadableServerCount());
@@ -106,6 +113,10 @@ public class Monitor {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         int stroageCount = 0;
         for (StructStorageStat storageStat : storageStats) {
+          available_mb = storageStat.getFreeMB() - storageStat.getReservedMB();
+          if (available_mb < 0) {
+            available_mb = 0;
+          }
           stroageCount++;
           System.out.println("\tStorage " + stroageCount + ":");
           System.out.println("\t\tstorage id = " + storageStat.getId());
@@ -115,8 +126,10 @@ public class Monitor {
           System.out.println("\t\tversion = " + storageStat.getVersion());
           System.out.println("\t\tjoin time = " + df.format(storageStat.getJoinTime()));
           System.out.println("\t\tup time = " + (storageStat.getUpTime().getTime() == 0 ? "" : df.format(storageStat.getUpTime())));
-          System.out.println("\t\ttotal storage = " + storageStat.getTotalMB() + "MB");
-          System.out.println("\t\tfree storage = " + storageStat.getFreeMB() + "MB");
+          System.out.println("\t\tdisk total space = " + storageStat.getTotalMB() + "MB");
+          System.out.println("\t\tdisk free space = " + storageStat.getFreeMB() + "MB");
+          System.out.println("\t\tdisk reserved space = " + storageStat.getReservedMB() + " MB");
+          System.out.println("\t\tdisk availale space = " + available_mb + " MB");
           System.out.println("\t\tupload priority = " + storageStat.getUploadPriority());
           System.out.println("\t\tstore_path_count = " + storageStat.getStorePathCount());
           System.out.println("\t\tsubdir_count_per_path = " + storageStat.getSubdirCountPerPath());

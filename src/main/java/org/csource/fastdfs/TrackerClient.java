@@ -673,15 +673,9 @@ public class TrackerClient {
                 return null;
             }
 
-            if (pkgInfo.body.length % StructIPv6StorageStat.getFieldsTotalSize() == 0) {
-                ProtoStructDecoder<StructIPv6StorageStat> decoder = new ProtoStructDecoder<StructIPv6StorageStat>();
-                return decoder.decode(pkgInfo.body, StructIPv6StorageStat.class,
-                        StructIPv6StorageStat.getFieldsTotalSize());
-            } else {
-                ProtoStructDecoder<StructIPv4StorageStat> decoder = new ProtoStructDecoder<StructIPv4StorageStat>();
-                return decoder.decode(pkgInfo.body, StructIPv4StorageStat.class,
-                        StructIPv4StorageStat.getFieldsTotalSize());
-            }
+            ProtoStructDecoder<StructStorageStat> decoder = new ProtoStructDecoder<StructStorageStat>();
+            return decoder.decode(pkgInfo.body, StructStorageStat.class,
+                    StructStorageStat.getFieldsTotalSize());
         } catch (IOException ex) {
             try {
                 connection.close();

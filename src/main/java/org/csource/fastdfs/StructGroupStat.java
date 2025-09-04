@@ -18,18 +18,21 @@ public class StructGroupStat extends StructBase {
   protected static final int FIELD_INDEX_GROUP_NAME = 0;
   protected static final int FIELD_INDEX_TOTAL_MB = 1;
   protected static final int FIELD_INDEX_FREE_MB = 2;
-  protected static final int FIELD_INDEX_TRUNK_FREE_MB = 3;
-  protected static final int FIELD_INDEX_STORAGE_COUNT = 4;
-  protected static final int FIELD_INDEX_STORAGE_PORT = 5;
-  protected static final int FIELD_INDEX_READABLE_SERVER_COUNT = 6;
-  protected static final int FIELD_INDEX_WRITABLE_SERVER_COUNT = 7;
-  protected static final int FIELD_INDEX_CURRENT_WRITE_SERVER = 8;
-  protected static final int FIELD_INDEX_STORE_PATH_COUNT = 9;
-  protected static final int FIELD_INDEX_SUBDIR_COUNT_PER_PATH = 10;
-  protected static final int FIELD_INDEX_CURRENT_TRUNK_FILE_ID = 11;
+  protected static final int FIELD_INDEX_RESERVED_MB = 3;
+  protected static final int FIELD_INDEX_TRUNK_FREE_MB = 4;
+  protected static final int FIELD_INDEX_STORAGE_COUNT = 5;
+  protected static final int FIELD_INDEX_STORAGE_PORT = 6;
+  protected static final int FIELD_INDEX_READABLE_SERVER_COUNT = 7;
+  protected static final int FIELD_INDEX_WRITABLE_SERVER_COUNT = 8;
+  protected static final int FIELD_INDEX_CURRENT_WRITE_SERVER = 9;
+  protected static final int FIELD_INDEX_STORE_PATH_COUNT = 10;
+  protected static final int FIELD_INDEX_SUBDIR_COUNT_PER_PATH = 11;
+  protected static final int FIELD_INDEX_CURRENT_TRUNK_FILE_ID = 12;
+
+  protected static final int FIELD_COUNT = 13;
 
   protected static int fieldsTotalSize;
-  protected static StructBase.FieldInfo[] fieldsArray = new StructBase.FieldInfo[12];
+  protected static StructBase.FieldInfo[] fieldsArray = new StructBase.FieldInfo[FIELD_COUNT];
 
   static {
     int offset = 0;
@@ -43,6 +46,10 @@ public class StructGroupStat extends StructBase {
 
     fieldsArray[FIELD_INDEX_FREE_MB] = new StructBase.FieldInfo(
             "freeMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+    offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
+
+    fieldsArray[FIELD_INDEX_RESERVED_MB] = new StructBase.FieldInfo(
+            "reservedMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
     offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
     fieldsArray[FIELD_INDEX_TRUNK_FREE_MB] = new StructBase.FieldInfo(
@@ -85,8 +92,9 @@ public class StructGroupStat extends StructBase {
   }
 
   protected String groupName;  //name of this group
-  protected long totalMB;      //total disk storage in MB
+  protected long totalMB;      //total disk space in MB
   protected long freeMB;       //free disk space in MB
+  protected long reservedMB;   //reserved disk space in MB
   protected long trunkFreeMB;  //trunk free space in MB
   protected int storageCount;  //storage server count
   protected int storagePort;   //storage server port
@@ -131,6 +139,15 @@ public class StructGroupStat extends StructBase {
    */
   public long getFreeMB() {
     return this.freeMB;
+  }
+
+  /**
+   * get reserved disk space in MB
+   *
+   * @return reserved disk space in MB
+   */
+  public long getReservedMB() {
+    return this.reservedMB;
   }
 
   /**
@@ -224,6 +241,7 @@ public class StructGroupStat extends StructBase {
     this.groupName = stringValue(bs, offset, fieldsArray[FIELD_INDEX_GROUP_NAME]);
     this.totalMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_TOTAL_MB]);
     this.freeMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_FREE_MB]);
+    this.reservedMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_RESERVED_MB]);
     this.trunkFreeMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_TRUNK_FREE_MB]);
     this.storageCount = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORAGE_COUNT]);
     this.storagePort = intValue(bs, offset, fieldsArray[FIELD_INDEX_STORAGE_PORT]);

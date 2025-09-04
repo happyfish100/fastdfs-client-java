@@ -14,7 +14,7 @@ import java.util.Date;
  * C struct body decoder
  *
  * @author Happy Fish / YuQing
- * @version Version 1.34
+ * @version Version 1.35
  */
 public class StructStorageStat extends StructBase {
   protected static final int FIELD_INDEX_STATUS = 0;
@@ -27,65 +27,68 @@ public class StructStorageStat extends StructBase {
   protected static final int FIELD_INDEX_UP_TIME = 7;
   protected static final int FIELD_INDEX_TOTAL_MB = 8;
   protected static final int FIELD_INDEX_FREE_MB = 9;
-  protected static final int FIELD_INDEX_UPLOAD_PRIORITY = 10;
-  protected static final int FIELD_INDEX_STORE_PATH_COUNT = 11;
-  protected static final int FIELD_INDEX_SUBDIR_COUNT_PER_PATH = 12;
-  protected static final int FIELD_INDEX_CURRENT_WRITE_PATH = 13;
-  protected static final int FIELD_INDEX_STORAGE_PORT = 14;
+  protected static final int FIELD_INDEX_RESERVED_MB = 10;
 
-  protected static final int FIELD_INDEX_CONNECTION_ALLOC_COUNT = 15;
-  protected static final int FIELD_INDEX_CONNECTION_CURRENT_COUNT = 16;
-  protected static final int FIELD_INDEX_CONNECTION_MAX_COUNT = 17;
+  protected static final int FIELD_INDEX_UPLOAD_PRIORITY = 11;
+  protected static final int FIELD_INDEX_STORE_PATH_COUNT = 12;
+  protected static final int FIELD_INDEX_SUBDIR_COUNT_PER_PATH = 13;
+  protected static final int FIELD_INDEX_CURRENT_WRITE_PATH = 14;
+  protected static final int FIELD_INDEX_STORAGE_PORT = 15;
 
-  protected static final int FIELD_INDEX_TOTAL_UPLOAD_COUNT = 18;
-  protected static final int FIELD_INDEX_SUCCESS_UPLOAD_COUNT = 19;
-  protected static final int FIELD_INDEX_TOTAL_APPEND_COUNT = 20;
-  protected static final int FIELD_INDEX_SUCCESS_APPEND_COUNT = 21;
-  protected static final int FIELD_INDEX_TOTAL_MODIFY_COUNT = 22;
-  protected static final int FIELD_INDEX_SUCCESS_MODIFY_COUNT = 23;
-  protected static final int FIELD_INDEX_TOTAL_TRUNCATE_COUNT = 24;
-  protected static final int FIELD_INDEX_SUCCESS_TRUNCATE_COUNT = 25;
-  protected static final int FIELD_INDEX_TOTAL_SET_META_COUNT = 26;
-  protected static final int FIELD_INDEX_SUCCESS_SET_META_COUNT = 27;
-  protected static final int FIELD_INDEX_TOTAL_DELETE_COUNT = 28;
-  protected static final int FIELD_INDEX_SUCCESS_DELETE_COUNT = 29;
-  protected static final int FIELD_INDEX_TOTAL_DOWNLOAD_COUNT = 30;
-  protected static final int FIELD_INDEX_SUCCESS_DOWNLOAD_COUNT = 31;
-  protected static final int FIELD_INDEX_TOTAL_GET_META_COUNT = 32;
-  protected static final int FIELD_INDEX_SUCCESS_GET_META_COUNT = 33;
-  protected static final int FIELD_INDEX_TOTAL_CREATE_LINK_COUNT = 34;
-  protected static final int FIELD_INDEX_SUCCESS_CREATE_LINK_COUNT = 35;
-  protected static final int FIELD_INDEX_TOTAL_DELETE_LINK_COUNT = 36;
-  protected static final int FIELD_INDEX_SUCCESS_DELETE_LINK_COUNT = 37;
-  protected static final int FIELD_INDEX_TOTAL_UPLOAD_BYTES = 38;
-  protected static final int FIELD_INDEX_SUCCESS_UPLOAD_BYTES = 39;
-  protected static final int FIELD_INDEX_TOTAL_APPEND_BYTES = 40;
-  protected static final int FIELD_INDEX_SUCCESS_APPEND_BYTES = 41;
-  protected static final int FIELD_INDEX_TOTAL_MODIFY_BYTES = 42;
-  protected static final int FIELD_INDEX_SUCCESS_MODIFY_BYTES = 43;
-  protected static final int FIELD_INDEX_TOTAL_DOWNLOAD_BYTES = 44;
-  protected static final int FIELD_INDEX_SUCCESS_DOWNLOAD_BYTES = 45;
-  protected static final int FIELD_INDEX_TOTAL_SYNC_IN_BYTES = 46;
-  protected static final int FIELD_INDEX_SUCCESS_SYNC_IN_BYTES = 47;
-  protected static final int FIELD_INDEX_TOTAL_SYNC_OUT_BYTES = 48;
-  protected static final int FIELD_INDEX_SUCCESS_SYNC_OUT_BYTES = 49;
-  protected static final int FIELD_INDEX_TOTAL_FILE_OPEN_COUNT = 50;
-  protected static final int FIELD_INDEX_SUCCESS_FILE_OPEN_COUNT = 51;
-  protected static final int FIELD_INDEX_TOTAL_FILE_READ_COUNT = 52;
-  protected static final int FIELD_INDEX_SUCCESS_FILE_READ_COUNT = 53;
-  protected static final int FIELD_INDEX_TOTAL_FILE_WRITE_COUNT = 54;
-  protected static final int FIELD_INDEX_SUCCESS_FILE_WRITE_COUNT = 55;
-  protected static final int FIELD_INDEX_LAST_SOURCE_UPDATE = 56;
-  protected static final int FIELD_INDEX_LAST_SYNC_UPDATE = 57;
-  protected static final int FIELD_INDEX_LAST_SYNCED_TIMESTAMP = 58;
-  protected static final int FIELD_INDEX_LAST_HEART_BEAT_TIME = 59;
-  protected static final int FIELD_INDEX_IF_TRUNK_FILE = 60;
+  protected static final int FIELD_INDEX_CONNECTION_ALLOC_COUNT = 16;
+  protected static final int FIELD_INDEX_CONNECTION_CURRENT_COUNT = 17;
+  protected static final int FIELD_INDEX_CONNECTION_MAX_COUNT = 18;
 
-  protected static final int FIELD_COUNT = 61;
+  protected static final int FIELD_INDEX_TOTAL_UPLOAD_COUNT = 19;
+  protected static final int FIELD_INDEX_SUCCESS_UPLOAD_COUNT = 20;
+  protected static final int FIELD_INDEX_TOTAL_APPEND_COUNT = 21;
+  protected static final int FIELD_INDEX_SUCCESS_APPEND_COUNT = 22;
+  protected static final int FIELD_INDEX_TOTAL_MODIFY_COUNT = 23;
+  protected static final int FIELD_INDEX_SUCCESS_MODIFY_COUNT = 24;
+  protected static final int FIELD_INDEX_TOTAL_TRUNCATE_COUNT = 25;
+  protected static final int FIELD_INDEX_SUCCESS_TRUNCATE_COUNT = 26;
+  protected static final int FIELD_INDEX_TOTAL_SET_META_COUNT = 27;
+  protected static final int FIELD_INDEX_SUCCESS_SET_META_COUNT = 28;
+  protected static final int FIELD_INDEX_TOTAL_DELETE_COUNT = 29;
+  protected static final int FIELD_INDEX_SUCCESS_DELETE_COUNT = 30;
+  protected static final int FIELD_INDEX_TOTAL_DOWNLOAD_COUNT = 31;
+  protected static final int FIELD_INDEX_SUCCESS_DOWNLOAD_COUNT = 32;
+  protected static final int FIELD_INDEX_TOTAL_GET_META_COUNT = 33;
+  protected static final int FIELD_INDEX_SUCCESS_GET_META_COUNT = 34;
+  protected static final int FIELD_INDEX_TOTAL_CREATE_LINK_COUNT = 35;
+  protected static final int FIELD_INDEX_SUCCESS_CREATE_LINK_COUNT = 36;
+  protected static final int FIELD_INDEX_TOTAL_DELETE_LINK_COUNT = 37;
+  protected static final int FIELD_INDEX_SUCCESS_DELETE_LINK_COUNT = 38;
+  protected static final int FIELD_INDEX_TOTAL_UPLOAD_BYTES = 39;
+  protected static final int FIELD_INDEX_SUCCESS_UPLOAD_BYTES = 40;
+  protected static final int FIELD_INDEX_TOTAL_APPEND_BYTES = 41;
+  protected static final int FIELD_INDEX_SUCCESS_APPEND_BYTES = 42;
+  protected static final int FIELD_INDEX_TOTAL_MODIFY_BYTES = 43;
+  protected static final int FIELD_INDEX_SUCCESS_MODIFY_BYTES = 44;
+  protected static final int FIELD_INDEX_TOTAL_DOWNLOAD_BYTES = 45;
+  protected static final int FIELD_INDEX_SUCCESS_DOWNLOAD_BYTES = 46;
+  protected static final int FIELD_INDEX_TOTAL_SYNC_IN_BYTES = 47;
+  protected static final int FIELD_INDEX_SUCCESS_SYNC_IN_BYTES = 48;
+  protected static final int FIELD_INDEX_TOTAL_SYNC_OUT_BYTES = 49;
+  protected static final int FIELD_INDEX_SUCCESS_SYNC_OUT_BYTES = 50;
+  protected static final int FIELD_INDEX_TOTAL_FILE_OPEN_COUNT = 51;
+  protected static final int FIELD_INDEX_SUCCESS_FILE_OPEN_COUNT = 52;
+  protected static final int FIELD_INDEX_TOTAL_FILE_READ_COUNT = 53;
+  protected static final int FIELD_INDEX_SUCCESS_FILE_READ_COUNT = 54;
+  protected static final int FIELD_INDEX_TOTAL_FILE_WRITE_COUNT = 55;
+  protected static final int FIELD_INDEX_SUCCESS_FILE_WRITE_COUNT = 56;
+  protected static final int FIELD_INDEX_LAST_SOURCE_UPDATE = 57;
+  protected static final int FIELD_INDEX_LAST_SYNC_UPDATE = 58;
+  protected static final int FIELD_INDEX_LAST_SYNCED_TIMESTAMP = 59;
+  protected static final int FIELD_INDEX_LAST_HEART_BEAT_TIME = 60;
+  protected static final int FIELD_INDEX_IF_TRUNK_FILE = 61;
 
-  protected static int initFieldsArray(StructBase.FieldInfo[] fieldsArray,
-          int ipaddr_size, int version_size)
-  {
+  protected static final int FIELD_COUNT = 62;
+
+  protected static int fieldsTotalSize;
+  protected static StructBase.FieldInfo[] fieldsArray = new StructBase.FieldInfo[FIELD_COUNT];
+
+  static {
       int offset = 0;
 
       fieldsArray[FIELD_INDEX_STATUS] = new StructBase.FieldInfo(
@@ -101,16 +104,16 @@ public class StructStorageStat extends StructBase {
       offset += ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE;
 
       fieldsArray[FIELD_INDEX_IP_ADDR] = new StructBase.FieldInfo(
-              "ipAddr", offset, ipaddr_size);
-      offset += ipaddr_size;
+              "ipAddr", offset, ProtoCommon.FDFS_IPV6_SIZE);
+      offset += ProtoCommon.FDFS_IPV6_SIZE;
 
       fieldsArray[FIELD_INDEX_SRC_ID] = new StructBase.FieldInfo(
               "srcId", offset, ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE);
       offset += ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE;
 
       fieldsArray[FIELD_INDEX_VERSION] = new StructBase.FieldInfo(
-              "version", offset, version_size);
-      offset += version_size;
+              "version", offset, ProtoCommon.FDFS_VERSION_SIZE);
+      offset += ProtoCommon.FDFS_VERSION_SIZE;
 
       fieldsArray[FIELD_INDEX_JOIN_TIME] = new StructBase.FieldInfo(
               "joinTime", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
@@ -126,6 +129,10 @@ public class StructStorageStat extends StructBase {
 
       fieldsArray[FIELD_INDEX_FREE_MB] = new StructBase.FieldInfo(
               "freeMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
+      offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
+
+      fieldsArray[FIELD_INDEX_RESERVED_MB] = new StructBase.FieldInfo(
+              "reservedMB", offset, ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE);
       offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
 
       fieldsArray[FIELD_INDEX_UPLOAD_PRIORITY] = new StructBase.FieldInfo(
@@ -332,7 +339,16 @@ public class StructStorageStat extends StructBase {
               "ifTrunkServer", offset, 1);
       offset += 1;
 
-      return offset;
+      fieldsTotalSize = offset;
+  }
+
+  /**
+   * get fields total size
+   *
+   * @return fields total size
+   */
+  public static int getFieldsTotalSize() {
+    return fieldsTotalSize;
   }
 
   protected byte status;
@@ -341,8 +357,9 @@ public class StructStorageStat extends StructBase {
   protected String ipAddr;
   protected String srcId;
   protected String version;
-  protected long totalMB; //total disk storage in MB
-  protected long freeMB;  //free disk storage in MB
+  protected long totalMB;     //total disk space in MB
+  protected long freeMB;      //free disk space in MB
+  protected long reservedMB;  //reserved disk space in MB
   protected int uploadPriority;  //upload priority
   protected Date joinTime; //storage join timestamp (create timestamp)
   protected Date upTime;   //storage service started timestamp
@@ -467,6 +484,15 @@ public class StructStorageStat extends StructBase {
    */
   public long getFreeMB() {
     return this.freeMB;
+  }
+
+  /**
+   * get reserved disk space in MB
+   *
+   * @return reserved disk space in MB
+   */
+  public long getReservedMB() {
+    return this.reservedMB;
   }
 
   /**
@@ -952,7 +978,7 @@ public class StructStorageStat extends StructBase {
    * @param bs     byte array
    * @param offset start offset
    */
-  protected void setFields(StructBase.FieldInfo[] fieldsArray, byte[] bs, int offset) {
+  public void setFields(byte[] bs, int offset) {
     this.status = byteValue(bs, offset, fieldsArray[FIELD_INDEX_STATUS]);
     this.readWriteMode = byteValue(bs, offset, fieldsArray[FIELD_INDEX_RW_MODE]);
     this.id = stringValue(bs, offset, fieldsArray[FIELD_INDEX_ID]);
@@ -961,6 +987,7 @@ public class StructStorageStat extends StructBase {
     this.version = stringValue(bs, offset, fieldsArray[FIELD_INDEX_VERSION]);
     this.totalMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_TOTAL_MB]);
     this.freeMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_FREE_MB]);
+    this.reservedMB = longValue(bs, offset, fieldsArray[FIELD_INDEX_RESERVED_MB]);
     this.uploadPriority = intValue(bs, offset, fieldsArray[FIELD_INDEX_UPLOAD_PRIORITY]);
     this.joinTime = dateValue(bs, offset, fieldsArray[FIELD_INDEX_JOIN_TIME]);
     this.upTime = dateValue(bs, offset, fieldsArray[FIELD_INDEX_UP_TIME]);
@@ -1016,8 +1043,5 @@ public class StructStorageStat extends StructBase {
     this.lastSyncedTimestamp = dateValue(bs, offset, fieldsArray[FIELD_INDEX_LAST_SYNCED_TIMESTAMP]);
     this.lastHeartBeatTime = dateValue(bs, offset, fieldsArray[FIELD_INDEX_LAST_HEART_BEAT_TIME]);
     this.ifTrunkServer = booleanValue(bs, offset, fieldsArray[FIELD_INDEX_IF_TRUNK_FILE]);
-  }
-
-  public void setFields(byte[] bs, int offset) {
   }
 }
