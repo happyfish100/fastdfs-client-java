@@ -1,4 +1,10 @@
 
+Version 1.36  2025-10-26
+  * monitor protocol compatible with IPv4/IPv6 address automatically 
+  * FastDFS server verson requirements:
+    # group and storage statistics / monitor APIs: FastDFS server >= V6.13.1
+    # other APIs: FastDFS server >= V6.06
+
 Version 1.35  2025-09-04
   * group and storage statistics / monitor API output reserved
     and available space

@@ -657,7 +657,8 @@ public class TrackerClient {
                 ipAddrLen = 0;
             }
 
-            header = ProtoCommon.packHeader(ProtoCommon.TRACKER_PROTO_CMD_SERVER_LIST_STORAGE, ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + ipAddrLen, (byte) 0);
+            header = ProtoCommon.packHeader(ProtoCommon.TRACKER_PROTO_CMD_SERVER_LIST_STORAGE,
+                    ProtoCommon.FDFS_GROUP_NAME_MAX_LEN + ipAddrLen, (byte) 0);
             byte[] wholePkg = new byte[header.length + bGroupName.length + ipAddrLen];
             System.arraycopy(header, 0, wholePkg, 0, header.length);
             System.arraycopy(bGroupName, 0, wholePkg, header.length, bGroupName.length);
@@ -673,9 +674,17 @@ public class TrackerClient {
                 return null;
             }
 
-            ProtoStructDecoder<StructStorageStat> decoder = new ProtoStructDecoder<StructStorageStat>();
-            return decoder.decode(pkgInfo.body, StructStorageStat.class,
-                    StructStorageStat.getFieldsTotalSize());
+            if (pkgInfo.body.length % StructIPv6StorageStat.getFieldsTotalSize() == 0) {
+                ProtoStructDecoder<StructIPv6StorageStat> decoder =
+                    new ProtoStructDecoder<StructIPv6StorageStat>();
+                return decoder.decode(pkgInfo.body, StructIPv6StorageStat.class,
+                        StructIPv6StorageStat.getFieldsTotalSize());
+            } else {
+                ProtoStructDecoder<StructIPv4StorageStat> decoder =
+                    new ProtoStructDecoder<StructIPv4StorageStat>();
+                return decoder.decode(pkgInfo.body, StructIPv4StorageStat.class,
+                        StructIPv4StorageStat.getFieldsTotalSize());
+            }
         } catch (IOException ex) {
             try {
                 connection.close();

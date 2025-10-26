@@ -85,10 +85,7 @@ public class StructStorageStat extends StructBase {
 
   protected static final int FIELD_COUNT = 62;
 
-  protected static int fieldsTotalSize;
-  protected static StructBase.FieldInfo[] fieldsArray = new StructBase.FieldInfo[FIELD_COUNT];
-
-  static {
+  protected static int initFieldsArray(StructBase.FieldInfo[] fieldsArray, int ipaddr_size) {
       int offset = 0;
 
       fieldsArray[FIELD_INDEX_STATUS] = new StructBase.FieldInfo(
@@ -104,8 +101,8 @@ public class StructStorageStat extends StructBase {
       offset += ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE;
 
       fieldsArray[FIELD_INDEX_IP_ADDR] = new StructBase.FieldInfo(
-              "ipAddr", offset, ProtoCommon.FDFS_IPV6_SIZE);
-      offset += ProtoCommon.FDFS_IPV6_SIZE;
+              "ipAddr", offset, ipaddr_size);
+      offset += ipaddr_size;
 
       fieldsArray[FIELD_INDEX_SRC_ID] = new StructBase.FieldInfo(
               "srcId", offset, ProtoCommon.FDFS_STORAGE_ID_MAX_SIZE);
@@ -339,16 +336,7 @@ public class StructStorageStat extends StructBase {
               "ifTrunkServer", offset, 1);
       offset += 1;
 
-      fieldsTotalSize = offset;
-  }
-
-  /**
-   * get fields total size
-   *
-   * @return fields total size
-   */
-  public static int getFieldsTotalSize() {
-    return fieldsTotalSize;
+      return offset;
   }
 
   protected byte status;
@@ -978,7 +966,7 @@ public class StructStorageStat extends StructBase {
    * @param bs     byte array
    * @param offset start offset
    */
-  public void setFields(byte[] bs, int offset) {
+  protected void setFields(StructBase.FieldInfo[] fieldsArray, byte[] bs, int offset) {
     this.status = byteValue(bs, offset, fieldsArray[FIELD_INDEX_STATUS]);
     this.readWriteMode = byteValue(bs, offset, fieldsArray[FIELD_INDEX_RW_MODE]);
     this.id = stringValue(bs, offset, fieldsArray[FIELD_INDEX_ID]);
@@ -1043,5 +1031,8 @@ public class StructStorageStat extends StructBase {
     this.lastSyncedTimestamp = dateValue(bs, offset, fieldsArray[FIELD_INDEX_LAST_SYNCED_TIMESTAMP]);
     this.lastHeartBeatTime = dateValue(bs, offset, fieldsArray[FIELD_INDEX_LAST_HEART_BEAT_TIME]);
     this.ifTrunkServer = booleanValue(bs, offset, fieldsArray[FIELD_INDEX_IF_TRUNK_FILE]);
+  }
+
+  public void setFields(byte[] bs, int offset) {
   }
 }
