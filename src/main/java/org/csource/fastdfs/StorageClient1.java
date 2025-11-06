@@ -735,16 +735,26 @@ public class StorageClient1 extends StorageClient {
    * get file info from storage server
    *
    * @param file_id the file id(including group name and filename)
+   * @param flags combined flags as following:
+   *             ProtoCommon.FDFS_QUERY_FINFO_FLAGS_NOT_CALC_CRC32 : do NOT calculate CRC32
+   *                  for appender file or slave file
+   *             ProtoCommon.FDFS_QUERY_FINFO_FLAGS_KEEP_SILENCE   : keep silence,
+   *                  when this file not exist, do not log error on storage server
    * @return FileInfo object for success, return null for fail
    */
-  public FileInfo query_file_info1(String file_id) throws IOException, MyException {
-    String[] parts = new String[2];
-    this.errno = this.split_file_id(file_id, parts);
-    if (this.errno != 0) {
-      return null;
-    }
+  public FileInfo query_file_info1(String file_id, byte flags) throws IOException, MyException {
+      String[] parts = new String[2];
+      this.errno = this.split_file_id(file_id, parts);
+      if (this.errno != 0) {
+          return null;
+      }
 
-    return this.query_file_info(parts[0], parts[1]);
+      return this.query_file_info(parts[0], parts[1], flags);
+  }
+
+  public FileInfo query_file_info1(String file_id) throws IOException, MyException {
+      final byte flags = 0;
+      return this.query_file_info1(file_id, flags);
   }
 
   /**

@@ -1,4 +1,10 @@
 
+Version 1.37  2025-11-06
+  * query file info support two combined flags:
+        ProtoCommon.FDFS_QUERY_FINFO_FLAGS_NOT_CALC_CRC32
+        ProtoCommon.FDFS_QUERY_FINFO_FLAGS_KEEP_SILENCE
+    you must upgrade your FastDFS server V6.15.1 and higher version
+
 Version 1.36  2025-10-26
   * monitor protocol compatible with IPv4/IPv6 address automatically
   * FastDFS server version requirements:

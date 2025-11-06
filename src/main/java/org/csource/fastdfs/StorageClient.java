@@ -1540,9 +1540,14 @@ public class StorageClient {
      *
      * @param group_name      the group name of storage server
      * @param remote_filename filename on storage server
+     * @param flags combined flags as following:
+     *             ProtoCommon.FDFS_QUERY_FINFO_FLAGS_NOT_CALC_CRC32 : do NOT calculate CRC32
+     *                  for appender file or slave file
+     *             ProtoCommon.FDFS_QUERY_FINFO_FLAGS_KEEP_SILENCE   : keep silence,
+     *                  when this file not exist, do not log error on storage server
      * @return FileInfo object for success, return null for fail
      */
-    public FileInfo query_file_info(String group_name, String remote_filename) throws IOException, MyException {
+    public FileInfo query_file_info(String group_name, String remote_filename, byte flags) throws IOException, MyException {
         boolean bNewStorageServer = this.newUpdatableStorageConnection(group_name, remote_filename);
         Connection connection = this.storageServer.getConnection();
         try {
@@ -1566,7 +1571,7 @@ public class StorageClient {
             System.arraycopy(bs, 0, groupBytes, 0, groupLen);
 
             header = ProtoCommon.packHeader(ProtoCommon.STORAGE_PROTO_CMD_QUERY_FILE_INFO,
-                    +groupBytes.length + filenameBytes.length, (byte) 0);
+                    groupBytes.length + filenameBytes.length, flags);
             OutputStream out = connection.getOutputStream();
             byte[] wholePkg = new byte[header.length + groupBytes.length + filenameBytes.length];
             System.arraycopy(header, 0, wholePkg, 0, header.length);
@@ -1611,6 +1616,11 @@ public class StorageClient {
         } finally {
             releaseConnection(connection, bNewStorageServer);
         }
+    }
+
+    public FileInfo query_file_info(String group_name, String remote_filename) throws IOException, MyException {
+        final byte flags = 0;
+        return this.query_file_info(group_name, remote_filename, flags);
     }
 
     /**

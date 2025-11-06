@@ -113,6 +113,9 @@ public class ProtoCommon {
   public static final byte FDFS_RW_MODE_WRITEONLY = 2;
   public static final byte FDFS_RW_MODE_BOTH = FDFS_RW_MODE_READONLY + FDFS_RW_MODE_WRITEONLY;
 
+  public static final byte FDFS_QUERY_FINFO_FLAGS_NOT_CALC_CRC32 = 1;
+  public static final byte FDFS_QUERY_FINFO_FLAGS_KEEP_SILENCE   = 2;
+
   private ProtoCommon() {
   }
 
