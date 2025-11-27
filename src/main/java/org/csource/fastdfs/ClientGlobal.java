@@ -106,7 +106,7 @@ public class ClientGlobal {
       String[] ipAddresses = new String[lines.length];
       for (String line : lines) {
           String[] cols = line.split(" ");
-          if (cols.length != 3) {
+          if (!(cols.length == 3 || cols.length == 4)) {
               throw new MyException("invalid line: " + line);
           }
 
