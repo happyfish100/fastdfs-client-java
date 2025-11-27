@@ -62,7 +62,7 @@ public class ConnectionManager {
                         try {
                             isActive = connection.activeTest();
                         } catch (IOException e) {
-                            System.err.println("send to server[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] active test error ,emsg:" + e.getMessage());
+                            System.err.println("send to server[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] active test error, emsg: " + e.getMessage());
                             isActive = false;
                         }
                         if (!isActive) {
@@ -84,7 +84,7 @@ public class ConnectionManager {
                         throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, wait_time > " + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, emsg:" + e.getMessage());
+                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + " fail, emsg: " + e.getMessage());
                     }
                 }
                 return connection;
@@ -117,7 +117,7 @@ public class ConnectionManager {
                 connection.closeDirectly();
             }
         } catch (IOException e) {
-            System.err.println("close socket[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] error ,emsg:" + e.getMessage());
+            System.err.println("close socket[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] error, emsg: " + e.getMessage());
             e.printStackTrace();
         }
     }

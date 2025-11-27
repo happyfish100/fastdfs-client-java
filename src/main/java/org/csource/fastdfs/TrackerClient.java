@@ -85,13 +85,13 @@ public class TrackerClient {
             connection = trackerServer.getConnection();
         } catch (IOException e) {
             if (failOver) {
-                System.err.println("trackerServer get connection error, emsg:" + e.getMessage());
+                System.err.println("trackerServer get connection error, " + e.getMessage());
             } else {
                 throw e;
             }
         } catch (MyException e) {
             if (failOver) {
-                System.err.println("trackerServer get connection error, emsg:" + e.getMessage());
+                System.err.println("trackerServer get connection error, " + e.getMessage());
             } else {
                 throw e;
             }

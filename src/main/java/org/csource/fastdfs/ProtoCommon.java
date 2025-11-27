@@ -180,9 +180,13 @@ public class ProtoCommon {
     long pkg_len;
 
     header = new byte[FDFS_PROTO_PKG_LEN_SIZE + 2];
-
-    if ((bytes = in.read(header)) != header.length) {
-      throw new IOException("recv package size " + bytes + " != " + header.length);
+    bytes = in.read(header);
+    if (bytes != header.length) {
+        if (bytes < 0) {
+            throw new IOException("connection broken");
+        } else {
+            throw new IOException("recv package size " + bytes + " != " + header.length);
+        }
     }
 
     if (header[PROTO_HEADER_CMD_INDEX] != expect_cmd) {
@@ -222,7 +226,7 @@ public class ProtoCommon {
     byte[] body = new byte[(int) header.body_len];
     int totalBytes = 0;
     int remainBytes = (int) header.body_len;
-    int bytes;
+    int bytes = 0;
 
     while (totalBytes < header.body_len) {
       if ((bytes = in.read(body, totalBytes, remainBytes)) < 0) {
@@ -234,7 +238,12 @@ public class ProtoCommon {
     }
 
     if (totalBytes != header.body_len) {
-      throw new IOException("recv package size " + totalBytes + " != " + header.body_len);
+        if (totalBytes == 0) {
+            throw new IOException("connection broken");
+        } else {
+            throw new IOException("connection broken, recv length: " + totalBytes
+                    + ", expect length: " + header.body_len);
+        }
     }
 
     return new RecvPackageInfo((byte) 0, body);

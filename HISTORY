@@ -1,6 +1,7 @@
 
 Version 1.38  2025-11-27
   * bugfixed: loadStorageServersFromTracker correctly with rw option
+  * throw IOException with msg "connection broken" when in.read() < 0
 
 Version 1.37  2025-11-06
   * query file info support two combined flags:
