@@ -1,5 +1,5 @@
 
-Version 1.38  2025-11-27
+Version 1.38  2025-11-28
   * bugfixed: loadStorageServersFromTracker correctly with rw option
   * throw IOException with msg "connection broken" when in.read() < 0
 

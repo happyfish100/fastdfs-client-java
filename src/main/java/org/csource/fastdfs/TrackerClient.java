@@ -118,19 +118,19 @@ public class TrackerClient {
                 }
                 return trackerServer.getConnection();
             } catch (IOException e) {
-                System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + "," + e.getMessage());
+                System.err.println("fail over trackerServer get connection error, "
+                        + "failOverCount: " + failOverCount + ", " + e.getMessage());
                 if (failOverCount == length - 1) {
                     throw e;
                 }
 
             } catch (MyException e) {
-                System.err.println("fail over trackerServer get connection error, failOverCount:" + failOverCount + ", " + e.getMessage());
+                System.err.println("fail over trackerServer get connection error, "
+                        + "failOverCount: " + failOverCount + ", " + e.getMessage());
                 if (failOverCount == length - 1) {
                     throw e;
                 }
             }
-
-
         }
         return null;
     }
@@ -183,7 +183,7 @@ public class TrackerClient {
             }
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -275,7 +275,7 @@ public class TrackerClient {
             }
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -439,7 +439,7 @@ public class TrackerClient {
             out.write(wholePkg);
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -560,7 +560,7 @@ public class TrackerClient {
             out.write(header);
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -668,7 +668,7 @@ public class TrackerClient {
             out.write(wholePkg);
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -749,7 +749,7 @@ public class TrackerClient {
             out.write(wholePkg);
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.TRACKER_PROTO_CMD_RESP, 0);
+                    connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, 0);
             this.errno = pkgInfo.errno;
             return pkgInfo.errno == 0;
         } catch (IOException e) {
@@ -893,9 +893,8 @@ public class TrackerClient {
                 System.arraycopy(bs, 0, wholePkg, header.length, bs.length);
                 out.write(wholePkg);
 
-                ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(
-                        connection.getInputStream(),
-                        ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
+                ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
+                        connection.getInetSocketAddress(), ProtoCommon.TRACKER_PROTO_CMD_RESP, -1);
                 this.errno = pkgInfo.errno;
                 if (pkgInfo.errno != 0) {
                     return null;

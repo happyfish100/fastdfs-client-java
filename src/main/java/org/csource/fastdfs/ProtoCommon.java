@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
@@ -174,39 +175,48 @@ public class ProtoCommon {
    * @param expect_body_len expect response package body length
    * @return RecvHeaderInfo: errno and pkg body length
    */
-  public static RecvHeaderInfo recvHeader(InputStream in, byte expect_cmd, long expect_body_len) throws IOException {
-    byte[] header;
-    int bytes;
-    long pkg_len;
+  public static RecvHeaderInfo recvHeader(InputStream in, InetSocketAddress socketAddr,
+          byte expect_cmd, long expect_body_len) throws IOException
+  {
+      byte[] header;
+      int bytes;
+      long pkg_len;
 
-    header = new byte[FDFS_PROTO_PKG_LEN_SIZE + 2];
-    bytes = in.read(header);
-    if (bytes != header.length) {
-        if (bytes < 0) {
-            throw new IOException("connection broken");
-        } else {
-            throw new IOException("recv package size " + bytes + " != " + header.length);
-        }
-    }
+      header = new byte[FDFS_PROTO_PKG_LEN_SIZE + 2];
+      bytes = in.read(header);
+      if (bytes != header.length) {
+          if (bytes < 0) {
+              throw new IOException("server " + socketAddr.getAddress().getHostAddress()
+                      + ":" + socketAddr.getPort() + ", connection broken");
+          } else {
+              throw new IOException("server " + socketAddr.getAddress().getHostAddress() + ":"
+                      + socketAddr.getPort() + ", recv package size " + bytes + " != " + header.length);
+          }
+      }
 
-    if (header[PROTO_HEADER_CMD_INDEX] != expect_cmd) {
-      throw new IOException("recv cmd: " + header[PROTO_HEADER_CMD_INDEX] + " is not correct, expect cmd: " + expect_cmd);
-    }
+      if (header[PROTO_HEADER_CMD_INDEX] != expect_cmd) {
+          throw new IOException("server " + socketAddr.getAddress().getHostAddress() + ":"
+                  + socketAddr.getPort() + ", recv cmd: " + header[PROTO_HEADER_CMD_INDEX]
+                  + " is not correct, expect cmd: " + expect_cmd);
+      }
 
-    if (header[PROTO_HEADER_STATUS_INDEX] != 0) {
-      return new RecvHeaderInfo(header[PROTO_HEADER_STATUS_INDEX], 0);
-    }
+      if (header[PROTO_HEADER_STATUS_INDEX] != 0) {
+          return new RecvHeaderInfo(header[PROTO_HEADER_STATUS_INDEX], 0);
+      }
 
-    pkg_len = ProtoCommon.buff2long(header, 0);
-    if (pkg_len < 0) {
-      throw new IOException("recv body length: " + pkg_len + " < 0!");
-    }
+      pkg_len = ProtoCommon.buff2long(header, 0);
+      if (pkg_len < 0) {
+          throw new IOException("server " + socketAddr.getAddress().getHostAddress() + ":"
+                  + socketAddr.getPort() + ", recv body length: " + pkg_len + " < 0!");
+      }
 
-    if (expect_body_len >= 0 && pkg_len != expect_body_len) {
-      throw new IOException("recv body length: " + pkg_len + " is not correct, expect length: " + expect_body_len);
-    }
+      if (expect_body_len >= 0 && pkg_len != expect_body_len) {
+          throw new IOException("server " + socketAddr.getAddress().getHostAddress() + ":"
+                  + socketAddr.getPort() + ", recv body length: " + pkg_len
+                  + " is not correct, expect length: " + expect_body_len);
+      }
 
-    return new RecvHeaderInfo((byte) 0, pkg_len);
+      return new RecvHeaderInfo((byte)0, pkg_len);
   }
 
   /**
@@ -217,36 +227,40 @@ public class ProtoCommon {
    * @param expect_body_len expect response package body length
    * @return RecvPackageInfo: errno and reponse body(byte buff)
    */
-  public static RecvPackageInfo recvPackage(InputStream in, byte expect_cmd, long expect_body_len) throws IOException {
-    RecvHeaderInfo header = recvHeader(in, expect_cmd, expect_body_len);
-    if (header.errno != 0) {
-      return new RecvPackageInfo(header.errno, null);
-    }
-
-    byte[] body = new byte[(int) header.body_len];
-    int totalBytes = 0;
-    int remainBytes = (int) header.body_len;
-    int bytes = 0;
-
-    while (totalBytes < header.body_len) {
-      if ((bytes = in.read(body, totalBytes, remainBytes)) < 0) {
-        break;
+  public static RecvPackageInfo recvPackage(InputStream in, InetSocketAddress socketAddr,
+          byte expect_cmd, long expect_body_len) throws IOException
+  {
+      RecvHeaderInfo header = recvHeader(in, socketAddr, expect_cmd, expect_body_len);
+      if (header.errno != 0) {
+          return new RecvPackageInfo(header.errno, null);
       }
 
-      totalBytes += bytes;
-      remainBytes -= bytes;
-    }
+      byte[] body = new byte[(int) header.body_len];
+      int totalBytes = 0;
+      int remainBytes = (int) header.body_len;
+      int bytes = 0;
 
-    if (totalBytes != header.body_len) {
-        if (totalBytes == 0) {
-            throw new IOException("connection broken");
-        } else {
-            throw new IOException("connection broken, recv length: " + totalBytes
-                    + ", expect length: " + header.body_len);
-        }
-    }
+      while (totalBytes < header.body_len) {
+          if ((bytes = in.read(body, totalBytes, remainBytes)) < 0) {
+              break;
+          }
 
-    return new RecvPackageInfo((byte) 0, body);
+          totalBytes += bytes;
+          remainBytes -= bytes;
+      }
+
+      if (totalBytes != header.body_len) {
+          String msg = "server " + socketAddr.getAddress().getHostAddress()
+              + ":" + socketAddr.getPort() + " connection broken";
+          if (totalBytes == 0) {
+              throw new IOException(msg);
+          } else {
+              throw new IOException(msg + ", recv length: " + totalBytes
+                      + ", expect length: " + header.body_len);
+          }
+      }
+
+      return new RecvPackageInfo((byte)0, body);
   }
 
   /**
@@ -329,7 +343,8 @@ public class ProtoCommon {
     header = packHeader(FDFS_PROTO_CMD_ACTIVE_TEST, 0, (byte) 0);
     sock.getOutputStream().write(header);
 
-    RecvHeaderInfo headerInfo = recvHeader(sock.getInputStream(), TRACKER_PROTO_CMD_RESP, 0);
+    InetSocketAddress socketAddr = new InetSocketAddress(sock.getInetAddress(), sock.getPort());
+    RecvHeaderInfo headerInfo = recvHeader(sock.getInputStream(), socketAddr, TRACKER_PROTO_CMD_RESP, 0);
     return headerInfo.errno == 0 ? true : false;
   }
 

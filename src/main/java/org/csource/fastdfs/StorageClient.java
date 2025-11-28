@@ -656,7 +656,7 @@ public class StorageClient {
             out.write(wholePkg);
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -801,7 +801,7 @@ public class StorageClient {
             }
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return null;
@@ -907,7 +907,7 @@ public class StorageClient {
             }
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return this.errno;
@@ -1004,7 +1004,7 @@ public class StorageClient {
             }
 
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
                 return this.errno;
@@ -1040,7 +1040,7 @@ public class StorageClient {
         try {
             this.send_package(ProtoCommon.STORAGE_PROTO_CMD_DELETE_FILE, group_name, remote_filename, connection);
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
 
             this.errno = pkgInfo.errno;
             return pkgInfo.errno;
@@ -1122,7 +1122,7 @@ public class StorageClient {
 
             out.write(wholePkg);
             ProtoCommon.RecvPackageInfo pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
             this.errno = pkgInfo.errno;
             return pkgInfo.errno;
         } catch (IOException ex) {
@@ -1171,7 +1171,7 @@ public class StorageClient {
 
             this.send_download_package(group_name, remote_filename, file_offset, download_bytes, connection);
             pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
 
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
@@ -1232,7 +1232,7 @@ public class StorageClient {
                 this.send_download_package(group_name, remote_filename, file_offset, download_bytes, connection);
 
                 InputStream in = connection.getInputStream();
-                header = ProtoCommon.recvHeader(in, ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+                header = ProtoCommon.recvHeader(in, connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
                 this.errno = header.errno;
                 if (header.errno != 0) {
                     return header.errno;
@@ -1320,7 +1320,7 @@ public class StorageClient {
             this.send_download_package(group_name, remote_filename, file_offset, download_bytes, connection);
 
             InputStream in = connection.getInputStream();
-            header = ProtoCommon.recvHeader(in, ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+            header = ProtoCommon.recvHeader(in, connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
             this.errno = header.errno;
             if (header.errno != 0) {
                 return header.errno;
@@ -1376,7 +1376,7 @@ public class StorageClient {
 
             this.send_package(ProtoCommon.STORAGE_PROTO_CMD_GET_METADATA, group_name, remote_filename, connection);
             pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
 
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
@@ -1467,7 +1467,7 @@ public class StorageClient {
             }
 
             pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, 0);
 
             this.errno = pkgInfo.errno;
             return pkgInfo.errno;
@@ -1580,7 +1580,7 @@ public class StorageClient {
             out.write(wholePkg);
 
             pkgInfo = ProtoCommon.recvPackage(connection.getInputStream(),
-                    ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
+                    connection.getInetSocketAddress(), ProtoCommon.STORAGE_PROTO_CMD_RESP, -1);
 
             this.errno = pkgInfo.errno;
             if (pkgInfo.errno != 0) {
