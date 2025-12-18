@@ -97,6 +97,7 @@ public class Connection {
         }
         return isConnected;
     }
+
     public boolean isAvaliable() {
         if (isConnected()) {
             if (sock.getPort() == 0) {

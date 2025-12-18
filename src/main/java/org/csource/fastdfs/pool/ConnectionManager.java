@@ -115,7 +115,6 @@ public class ConnectionManager {
         } finally {
             lock.unlock();
         }
-
     }
 
     public void closeConnection(Connection connection) {

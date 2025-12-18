@@ -43,7 +43,6 @@ public class ConnectionPool {
         } else {
             connection.closeDirectly();
         }
-
     }
 
     public static void closeConnection(Connection connection) throws IOException {
@@ -64,7 +63,7 @@ public class ConnectionPool {
         if (socketAddress == null) {
             return null;
         }
-        return String.format("%s:%s", socketAddress.getAddress().getHostAddress(), socketAddress.getPort());
+        return String.format("%s-%s", socketAddress.getAddress().getHostAddress(), socketAddress.getPort());
     }
 
     @Override

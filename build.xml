@@ -4,7 +4,7 @@
 
   <target name="init">
     <property name="project.name" value="fastdfs-client-java"/>
-    <property name="project.version" value="1.27-SNAPSHOT"/>
+    <property name="project.version" value="1.38-SNAPSHOT"/>
     <property name="project.java" value="${basedir}/src/main/java"/>
     <property name="project.resources" value="${basedir}/src/main/resources"/>
     <property name="project.build" value="${basedir}/build"/>
