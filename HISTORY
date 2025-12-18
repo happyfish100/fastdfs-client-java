@@ -1,6 +1,7 @@
 
 Version 1.39  2025-12-18
   * ConnectionPool.getKey() use '-' instead of ':'
+  * ConnectionManager.java: remove private AtomicInteger freeCount
 
 Version 1.38  2025-11-28
   * bugfixed: loadStorageServersFromTracker correctly with rw option

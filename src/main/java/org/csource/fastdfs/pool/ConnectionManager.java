@@ -21,11 +21,6 @@ public class ConnectionManager {
     private AtomicInteger totalCount = new AtomicInteger();
 
     /**
-     * free connection count
-     */
-    private AtomicInteger freeCount = new AtomicInteger();
-
-    /**
      * lock
      */
     private ReentrantLock lock = new ReentrantLock(true);
@@ -50,9 +45,8 @@ public class ConnectionManager {
         try {
             Connection connection = null;
             while (true) {
-                if (freeCount.get() > 0) {
-                    freeCount.decrementAndGet();
-                    connection = freeConnections.poll();
+                connection = freeConnections.poll();
+                if (connection != null) {
                     if (!connection.isAvaliable() || (System.currentTimeMillis() - connection.getLastAccessTime()) >
                             ClientGlobal.g_connection_pool_max_idle_time)
                     {
@@ -75,8 +69,8 @@ public class ConnectionManager {
                             connection.setNeedActiveTest(false);
                         }
                     }
-                } else if (ClientGlobal.g_connection_pool_max_count_per_entry == 0 || totalCount.get() <
-                        ClientGlobal.g_connection_pool_max_count_per_entry)
+                } else if (ClientGlobal.g_connection_pool_max_count_per_entry == 0 ||
+                        totalCount.get() < ClientGlobal.g_connection_pool_max_count_per_entry)
                 {
                     connection = ConnectionFactory.create(this.inetSocketAddress);
                     totalCount.incrementAndGet();
@@ -86,12 +80,16 @@ public class ConnectionManager {
                             //wait single success
                             continue;
                         }
-                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress()
-                                + ":" + inetSocketAddress.getPort() + " fail, wait_time > "
-                                + ClientGlobal.g_connection_pool_max_wait_time_in_ms + "ms");
+
+                        throw new MyException("connections reach max_count_per_entry: "
+                                + ClientGlobal.g_connection_pool_max_count_per_entry + ", "
+                                + "await connection for server " + inetSocketAddress.getAddress().getHostAddress()
+                                + ":" + inetSocketAddress.getPort() + " timeout, wait_time > "
+                                + ClientGlobal.g_connection_pool_max_wait_time_in_ms + " ms");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        throw new MyException("connect to server " + inetSocketAddress.getAddress().getHostAddress()
+                        throw new MyException("connection full, await connection for server "
+                                + inetSocketAddress.getAddress().getHostAddress()
                                 + ":" + inetSocketAddress.getPort() + " fail, emsg: " + e.getMessage());
                     }
                 }
@@ -110,7 +108,6 @@ public class ConnectionManager {
         try {
             connection.setLastAccessTime(System.currentTimeMillis());
             freeConnections.add(connection);
-            freeCount.incrementAndGet();
             condition.signal();
         } finally {
             lock.unlock();
@@ -124,31 +121,29 @@ public class ConnectionManager {
                 connection.closeDirectly();
             }
         } catch (IOException e) {
-            System.err.println("close socket[" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() + "] error, emsg: " + e.getMessage());
+            System.err.println("close socket[" + inetSocketAddress.getAddress().getHostAddress()
+                    + ":" + inetSocketAddress.getPort() + "] error, emsg: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     public void setActiveTestFlag() {
-        if (freeCount.get() > 0) {
-            lock.lock();
-            try {
-                for (Connection freeConnection : freeConnections) {
-                    freeConnection.setNeedActiveTest(true);
-                }
-            } finally {
-                lock.unlock();
+        lock.lock();
+        try {
+            for (Connection freeConnection : freeConnections) {
+                freeConnection.setNeedActiveTest(true);
             }
+        } finally {
+            lock.unlock();
         }
     }
-
 
     @Override
     public String toString() {
         return "ConnectionManager{" +
                 "ip:port='" + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() +
                 ", totalCount=" + totalCount +
-                ", freeCount=" + freeCount +
+                ", freeCount=" + freeConnections.size() +
                 ", freeConnections =" + freeConnections +
                 '}';
     }
