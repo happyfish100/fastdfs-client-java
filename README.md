@@ -26,7 +26,7 @@ mvn install:install-file -DgroupId=org.csource -DartifactId=fastdfs-client-java 
 <dependency>
     <groupId>org.csource</groupId>
     <artifactId>fastdfs-client-java</artifactId>
-    <version>1.31-SNAPSHOT</version>
+    <version>1.39-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ tracker_server = 10.0.11.249:22122
 connection_pool.enabled = true
 connection_pool.max_count_per_entry = 500
 connection_pool.max_idle_time = 3600
-connection_pool.max_wait_time_in_ms = 1000
+connection_pool.max_wait_time_in_ms = 3000
 ```
 
     注1：tracker_server指向您自己IP地址和端口，1-n个
@@ -89,7 +89,7 @@ fastdfs.tracker_servers = 10.0.11.201:22122,10.0.11.202:22122,10.0.11.203:22122
 fastdfs.connection_pool.enabled = true
 fastdfs.connection_pool.max_count_per_entry = 500
 fastdfs.connection_pool.max_idle_time = 3600
-fastdfs.connection_pool.max_wait_time_in_ms = 1000
+fastdfs.connection_pool.max_wait_time_in_ms = 3000
 ```
 
     注1：properties 配置文件中属性名跟 conf 配置文件不尽相同，并且统一加前缀"fastdfs."，便于整合到用户项目配置文件
@@ -135,7 +135,7 @@ ClientGlobal.configInfo(): {
   g_connection_pool_enabled = true
   g_connection_pool_max_count_per_entry = 500
   g_connection_pool_max_idle_time(ms) = 3600000
-  g_connection_pool_max_wait_time_in_ms(ms) = 1000
+  g_connection_pool_max_wait_time_in_ms(ms) = 3000
   trackerServers = 10.0.11.101:22122,10.0.11.102:22122
 }
 ```
