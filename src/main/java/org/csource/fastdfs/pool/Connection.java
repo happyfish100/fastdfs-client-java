@@ -120,6 +120,10 @@ public class Connection {
         return false;
     }
 
+    public boolean isClosed() {
+        return this.sock == null;
+    }
+
     public boolean isNeedActiveTest() {
         return needActiveTest;
     }

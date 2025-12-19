@@ -104,6 +104,7 @@ public class ConnectionManager {
         if (connection == null) {
             return;
         }
+
         lock.lock();
         try {
             connection.setLastAccessTime(System.currentTimeMillis());
@@ -115,8 +116,12 @@ public class ConnectionManager {
     }
 
     public void closeConnection(Connection connection) {
+        if (connection == null) {
+            return;
+        }
+
         try {
-            if (connection != null) {
+            if (!connection.isClosed()) {
                 totalCount.decrementAndGet();
                 connection.closeDirectly();
             }
