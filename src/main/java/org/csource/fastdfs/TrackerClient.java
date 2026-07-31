@@ -8,6 +8,7 @@
 
 package org.csource.fastdfs;
 
+import org.csource.common.ConfigureMapper;
 import org.csource.common.MyException;
 import org.csource.fastdfs.pool.Connection;
 
@@ -319,6 +320,13 @@ public class TrackerClient {
 
                 port = (int) ProtoCommon.buff2long(pkgInfo.body, offset);
                 offset += ProtoCommon.FDFS_PROTO_PKG_LEN_SIZE;
+
+                String mapper = ConfigureMapper.getProperty(ip_addr);
+                if (!ConfigureMapper.isEmpty(new Object[]{mapper})) {
+                    String[] mappingIp = mapper.split(":");
+                    ip_addr = mappingIp[0];
+                    port = Integer.parseInt(mappingIp[1]);
+                }
 
                 results[i] = new StorageServer(ip_addr, port, store_path);
             }
